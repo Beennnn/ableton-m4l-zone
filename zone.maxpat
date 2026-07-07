@@ -15,7 +15,7 @@
       780,
       540
     ],
-    "openinpresentation": 0,
+    "openinpresentation": 1,
     "default_fontsize": 12.0,
     "default_fontface": 0,
     "default_fontname": "Arial",
@@ -150,7 +150,14 @@
               "parameter_mmin": 0,
               "parameter_mmax": 1
             }
-          }
+          },
+          "presentation": 1,
+          "presentation_rect": [
+            12,
+            30,
+            17,
+            17
+          ]
         }
       },
       {
@@ -183,7 +190,14 @@
                 48
               ]
             }
-          }
+          },
+          "presentation": 1,
+          "presentation_rect": [
+            66,
+            30,
+            46,
+            18
+          ]
         }
       },
       {
@@ -208,7 +222,14 @@
               "parameter_longname": "learnLo",
               "parameter_shortname": "Learn Lo"
             }
-          }
+          },
+          "presentation": 1,
+          "presentation_rect": [
+            120,
+            30,
+            52,
+            18
+          ]
         }
       },
       {
@@ -241,7 +262,14 @@
               "parameter_mmin": 0,
               "parameter_mmax": 1
             }
-          }
+          },
+          "presentation": 1,
+          "presentation_rect": [
+            12,
+            112,
+            17,
+            17
+          ]
         }
       },
       {
@@ -274,7 +302,14 @@
                 72
               ]
             }
-          }
+          },
+          "presentation": 1,
+          "presentation_rect": [
+            66,
+            112,
+            46,
+            18
+          ]
         }
       },
       {
@@ -299,7 +334,14 @@
               "parameter_longname": "learnHi",
               "parameter_shortname": "Learn Hi"
             }
-          }
+          },
+          "presentation": 1,
+          "presentation_rect": [
+            120,
+            112,
+            52,
+            18
+          ]
         }
       },
       {
@@ -437,6 +479,13 @@
           "outlettype": [
             "int",
             "int"
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            12,
+            54,
+            432,
+            40
           ]
         }
       },
@@ -455,6 +504,100 @@
           "outlettype": [
             "int",
             "int"
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            12,
+            136,
+            432,
+            40
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-30",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            40,
+            300,
+            30,
+            20
+          ],
+          "text": "Lo",
+          "fontsize": 11.0,
+          "textcolor": [
+            0.83,
+            0.83,
+            0.83,
+            1.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            38,
+            31,
+            26,
+            18
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-31",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            40,
+            370,
+            30,
+            20
+          ],
+          "text": "Hi",
+          "fontsize": 11.0,
+          "textcolor": [
+            0.83,
+            0.83,
+            0.83,
+            1.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            38,
+            113,
+            26,
+            18
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-32",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            190,
+            300,
+            240,
+            20
+          ],
+          "text": "Zone \u2014 pass notes in [Lo, Hi)",
+          "fontsize": 11.0,
+          "textcolor": [
+            0.62,
+            0.62,
+            0.62,
+            1.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            12,
+            170,
+            300,
+            18
           ]
         }
       }

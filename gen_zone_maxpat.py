@@ -67,6 +67,10 @@ box("obj-19", "newobj", "prepend set",     [640, 260,  75, 22], 1, 1)
 # pianos cliquables : clic sur une touche -> pose la borne (alimente le numbox)
 box("obj-20", "kslider", None, [360, 300, 340, 56], 1, 2, ["int", "int"])
 box("obj-21", "kslider", None, [360, 370, 340, 56], 1, 2, ["int", "int"])
+# labels (visible dans la vue Presentation = l'UI du device dans Ableton)
+box("obj-30", "comment", "Lo", [40, 300, 30, 20], 1, 0, None, {"fontsize": 11.0, "textcolor": [0.83, 0.83, 0.83, 1.0], "presentation": 1, "presentation_rect": [38, 31, 26, 18]})
+box("obj-31", "comment", "Hi", [40, 370, 30, 20], 1, 0, None, {"fontsize": 11.0, "textcolor": [0.83, 0.83, 0.83, 1.0], "presentation": 1, "presentation_rect": [38, 113, 26, 18]})
+box("obj-32", "comment", "Zone — pass notes in [Lo, Hi)", [190, 300, 240, 20], 1, 0, None, {"fontsize": 11.0, "textcolor": [0.62, 0.62, 0.62, 1.0], "presentation": 1, "presentation_rect": [12, 170, 300, 18]})
 
 # --- MIDI flow wiring ---
 line("obj-1", 0, "obj-2", 0)
@@ -90,12 +94,25 @@ line("obj-3", 2, "obj-19", 0); line("obj-19", 0, "obj-10", 0)
 line("obj-20", 0, "obj-7", 0)    # piano Lo -> loNote
 line("obj-21", 0, "obj-10", 0)   # piano Hi -> hiNote
 
+# vue Presentation = l'UI compacte du device dans Ableton (2 rangées Lo/Hi + pianos)
+PRES = {
+    "obj-6": [12, 30, 17, 17], "obj-7": [66, 30, 46, 18], "obj-8": [120, 30, 52, 18],
+    "obj-20": [12, 54, 432, 40],
+    "obj-9": [12, 112, 17, 17], "obj-10": [66, 112, 46, 18], "obj-11": [120, 112, 52, 18],
+    "obj-21": [12, 136, 432, 40],
+}
+for bx in boxes:
+    b = bx["box"]
+    if b["id"] in PRES:
+        b["presentation"] = 1
+        b["presentation_rect"] = PRES[b["id"]]
+
 patch = {"patcher": {
     "fileversion": 1,
     "appversion": {"major": 8, "minor": 6, "revision": 0, "architecture": "x64", "modernui": 1},
     "classnamespace": "box",
     "rect": [80, 80, 780, 540],
-    "openinpresentation": 0,
+    "openinpresentation": 1,
     "default_fontsize": 12.0, "default_fontface": 0, "default_fontname": "Arial",
     "gridonopen": 1, "gridsize": [15.0, 15.0],
     "boxes": boxes, "lines": lines,
