@@ -262,15 +262,15 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            96,
+            101,
             34,
-            40,
+            34,
             16
           ],
           "saved_attribute_attributes": {
             "valueof": {
               "parameter_longname": "loNote",
-              "parameter_shortname": "Lo",
+              "parameter_shortname": "Low",
               "parameter_type": 1,
               "parameter_mmin": 0.0,
               "parameter_mmax": 127.0,
@@ -302,7 +302,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            156,
+            146,
             34,
             15,
             15
@@ -342,15 +342,15 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            190,
+            193,
             34,
-            40,
+            34,
             16
           ],
           "saved_attribute_attributes": {
             "valueof": {
               "parameter_longname": "hiNote",
-              "parameter_shortname": "Hi",
+              "parameter_shortname": "High",
               "parameter_type": 1,
               "parameter_mmin": 0.0,
               "parameter_mmax": 127.0,
@@ -691,12 +691,12 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            79,
+            78,
             336,
             120,
             18
           ],
-          "text": "Lo",
+          "text": "Low",
           "fontsize": 10.0,
           "textcolor": [
             0.83,
@@ -706,9 +706,9 @@
           ],
           "presentation": 1,
           "presentation_rect": [
-            79,
+            78,
             36,
-            18,
+            20,
             15
           ]
         }
@@ -720,12 +720,12 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            173,
+            164,
             336,
             120,
             18
           ],
-          "text": "Hi",
+          "text": "High",
           "fontsize": 10.0,
           "textcolor": [
             0.83,
@@ -735,9 +735,9 @@
           ],
           "presentation": 1,
           "presentation_rect": [
-            173,
+            164,
             36,
-            18,
+            26,
             15
           ]
         }

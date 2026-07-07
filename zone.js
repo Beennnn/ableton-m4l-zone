@@ -18,7 +18,7 @@ outlets = 5;   // 0 = MIDI ; 1 = Lo fb ; 2 = Hi fb ; 3 = keyboard (kslider) hkey
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
-var mode = 0;
+var mode = 0, busy = 0;              // busy : guard against the live.tab colour-echo re-entering moded()
 var held = {};                       // inPitch -> outPitch
 var shown = -1;                      // key currently lit for the Edit-mode bound
 
@@ -60,8 +60,11 @@ function moded(v) {
     mode = clamp(v, 0, 3);
     var c = mode == 0 ? COL.lo : mode == 1 ? COL.hi : mode == 2 ? COL["in"] : COL.out;
     setColor(c);                                          // kslider highlight -> mode colour
-    outlet(4, "activebgcolor", c[0], c[1], c[2], c[3]);   // mode tab active colour (candidate attributes)
-    outlet(4, "activetabcolor", c[0], c[1], c[2], c[3]);
+    if (!busy) {                                          // live.tab echoes the colour msg straight back into moded() -> guard the synchronous re-entry (was: js stack overflow, outlets disabled)
+        busy = 1;
+        outlet(4, "activebgcolor", c[0], c[1], c[2], c[3]);   // mode tab active colour
+        busy = 0;
+    }
     clearShown();
     if (mode == 0) showKey(loNote);
     else if (mode == 1) showKey(hiNote);                  // Watch modes : cleared, live notes fill in
