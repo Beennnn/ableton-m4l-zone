@@ -4,7 +4,7 @@ Zone is a tiny **Max for Live MIDI Effect** that passes only the notes inside a 
 and lets everything else through untouched. It simply lets you optimise how you use the
 keyboard from one song to the next — a split tailored to each track.
 
-**▶ [Interactive demo](https://claude.ai/code/artifact/1a33057b-34ec-4ba8-b8df-364b2746d822)** — move a macro, watch one split point drive several zones.
+**▶ [Interactive demo](https://claude.ai/code/artifact/1a33057b-34ec-4ba8-b8df-364b2746d822)** · **[maxforlive.com](https://www.maxforlive.com/library/device.php?id=15717)** — move a macro, watch one split point drive several zones.
 
 ![Zone device UI](zone-ui.png)
 
