@@ -6,6 +6,8 @@ keyboard from one song to the next — a split tailored to each track.
 
 **▶ [Interactive demo](https://claude.ai/code/artifact/1a33057b-34ec-4ba8-b8df-364b2746d822)** — move a macro, watch one split point drive several zones.
 
+![Zone — keyboard split for Max for Live](zone-form-image.png)
+
 ## What it does
 
 - **Two independent, toggleable bounds** — `Lo` passes notes `≥` its value, `Hi` passes

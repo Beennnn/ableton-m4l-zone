@@ -1,5 +1,5 @@
 <!doctype html>
-<html lang="fr">
+<html lang="en">
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -51,26 +51,26 @@
   <header>
     <div class="eyebrow">Max for Live · MIDI device</div>
     <h1>Zone</h1>
-    <p class="tag">Optimise l'usage du clavier d'un morceau à l'autre — un découpage adapté à chaque titre. Un split point, plusieurs zones, une macro : filtre de notes par plage, passthrough MIDI complet, bornes mappables.</p>
+    <p class="tag">Optimise how you use the keyboard from one song to the next — a split tailored to each track. One split point, several zones, one macro: note-range filter, full MIDI passthrough, mappable bounds.</p>
   </header>
 
   <section class="card">
-    <h2>Bouge le split</h2>
-    <p class="sub">Chaque macro tient un point de split. Déplace-le : les deux zones qui s'y touchent suivent ensemble.</p>
+    <h2>Move the split</h2>
+    <p class="sub">Each macro holds a split point. Move it — the two zones that meet there follow together.</p>
     <div class="macros">
-      <div class="m"><span class="lab"><b>Macro 1</b> — split basse / claviers</span>
+      <div class="m"><span class="lab"><b>Macro 1</b> — bass / keys split</span>
         <input type="range" id="s1" min="36" max="84" step="1" value="48"><span class="val" id="v1"></span></div>
-      <div class="m"><span class="lab"><b>Macro 2</b> — split claviers / lead</span>
+      <div class="m"><span class="lab"><b>Macro 2</b> — keys / lead split</span>
         <input type="range" id="s2" min="36" max="84" step="1" value="60"><span class="val" id="v2"></span></div>
     </div>
-    <svg id="kb" viewBox="0 0 580 164" role="img" aria-label="Clavier découpé en trois zones colorées"></svg>
+    <svg id="kb" viewBox="0 0 580 164" role="img" aria-label="Keyboard split into three colored zones"></svg>
     <div class="legend" id="legend"></div>
   </section>
 
   <section class="card">
-    <h2>Lier les zones par macro</h2>
-    <p class="sub">Un <b>Zone</b> en tête de chaque chaîne du rack. Une macro se mappe sur deux bornes à la fois — la borne haute de la zone du bas et la borne basse de la zone du haut. Une seule macro, un split cohérent partagé.</p>
-    <svg id="rack" viewBox="0 0 600 264" role="img" aria-label="Schéma : deux macros pilotant les bornes de trois instances Zone dans un rack"></svg>
+    <h2>Link zones with a macro</h2>
+    <p class="sub">One <b>Zone</b> at the head of each rack chain. A macro maps to two bounds at once — the high bound of the lower zone and the low bound of the upper zone. One macro, one shared split.</p>
+    <svg id="rack" viewBox="0 0 600 264" role="img" aria-label="Diagram: two macros driving the bounds of three Zone instances in a rack"></svg>
   </section>
 
   <section class="feats" id="feats"></section>
@@ -83,7 +83,7 @@
   var NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
   var isW=function(n){return [0,2,4,5,7,9,11].indexOf(n%12)>=0;};
   var nm=function(n){return NAMES[n%12]+(Math.floor(n/12)-2);};
-  var Z=[{n:'Basse',i:'Sub-bass',c:'#35B98C'},{n:'Claviers',i:'Rhodes',c:'#E0A32E'},{n:'Lead',i:'Lead synth',c:'#9B8CF0'}];
+  var Z=[{n:'Bass',i:'Sub-bass',c:'#35B98C'},{n:'Keys',i:'Rhodes',c:'#E0A32E'},{n:'Lead',i:'Lead synth',c:'#9B8CF0'}];
   var whites=[];for(var n=LO;n<=HI;n++)if(isW(n))whites.push(n);
   var totW=whites.length*kW;
   var xOf=function(n){var c=0;for(var m=LO;m<n;m++)if(isW(m))c++;return c*kW;};
@@ -143,10 +143,10 @@
   }
   s1.addEventListener('input',render);s2.addEventListener('input',render);
 
-  var F=[['ti','Bornes Lo + Hi','chaque zone bornée en haut ET en bas — le Pitch natif ne fait que le bas'],
-    ['ti','Passthrough complet','CC, pitchbend, aftertouch, pédale : tout passe. SWAM garde son CC2'],
-    ['ti','Learn','clique Learn, joue une note, la borne est posée'],
-    ['ti','Zéro note coincée','le note-off part toujours, même si tu bouges la borne en jouant']];
+  var F=[['ti','Lo + Hi bounds','each zone bounded top AND bottom — native Pitch only does the bottom'],
+    ['ti','Full passthrough','CC, pitch bend, aftertouch, pedal: all pass through. SWAM keeps its CC2'],
+    ['ti','Learn','click Learn, play a note, the bound is set'],
+    ['ti','No stuck notes','the note-off always fires, even if you move a bound while playing']];
   document.getElementById('feats').innerHTML=F.map(function(f){return '<div class="ft"><span class="k">◆</span><span><b>'+f[1]+'</b> — '+f[2]+'</span></div>';}).join('');
   render();
 })();
