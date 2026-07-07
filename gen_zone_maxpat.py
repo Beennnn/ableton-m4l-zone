@@ -37,9 +37,10 @@ def lbtn(id, var, short, rect, pres):
         "varname": var, "parameter_enable": 1, "presentation": 1, "presentation_rect": pres,
         "saved_attribute_attributes": {"valueof": {"parameter_longname": var, "parameter_shortname": short}}})
 
-def lbl(id, text, pres, dim=False):
+def lbl(id, text, pres, dim=False, w=None):
+    if w is None: w = max(18, len(text) * 6 + 2)          # text-fit width -> a label never covers/blocks a nearby control
     box(id, "comment", text, [pres[0], 300 + pres[1], 120, 18], 1, 0, None,
-        {"fontsize": 10.0, "textcolor": [0.55 if dim else 0.83]*3 + [1.0], "presentation": 1, "presentation_rect": pres})
+        {"fontsize": 10.0, "textcolor": [0.55 if dim else 0.83]*3 + [1.0], "presentation": 1, "presentation_rect": [pres[0], pres[1], w, 15]})
 
 # --- MIDI flow (patching view) ---
 box("obj-1", "newobj", "midiin",       [ 30,  30,  45, 22], 1, 1, ["int"])
@@ -49,25 +50,33 @@ box("obj-4", "newobj", "midiformat",   [200, 300,  66, 22], 7, 1, ["int"])
 box("obj-5", "newobj", "midiout",      [ 30, 440,  50, 22], 1, 0)
 
 # --- UI controls (mappable) + presentation rects ---
-ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [10,  8, 16, 16])
-ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [100, 8, 16, 16])
-ltog("obj-6",  "loOn",   "Lo on",  [400,100, 24, 24], [10, 32, 16, 16])
-lnum("obj-7",  "loNote", "Lo",     [440,100, 60, 18], 48, 0.0,127.0, [48, 32, 42, 17])
-ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [108,32, 16, 16])
-lnum("obj-9",  "hiNote", "Hi",     [440,130, 60, 18], 72, 0.0,127.0, [146,32, 42, 17])
-lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [44, 57, 42, 17])
-lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[152,57, 42, 17])
-box("obj-14", "live.tab", None, [400, 190, 210, 20], 1, 3, ["", "", ""], {"varname": "mode", "parameter_enable": 1, "presentation": 1, "presentation_rect": [10, 82, 210, 18], "saved_attribute_attributes": {"valueof": {"parameter_longname": "mode", "parameter_shortname": "Mode", "parameter_type": 2, "parameter_enum": ["Edit Lo", "Edit Hi", "Watch In", "Watch Out"], "parameter_mmin": 0, "parameter_mmax": 3}}})
+# Global row (y~9) : Bypass = let everything through (no limits) ; Mute = block everything (empty zone)
+ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60,  9, 15, 15])
+ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206,  9, 15, 15])
+# Limits row (y~34) : Lo + Hi bounds, kept close together
+ltog("obj-6",  "loOn",   "Lo on",  [400,100, 24, 24], [ 60, 34, 15, 15])
+lnum("obj-7",  "loNote", "Lo",     [440,100, 60, 18], 48, 0.0,127.0, [ 96, 34, 40, 16])
+ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [156, 34, 15, 15])
+lnum("obj-9",  "hiNote", "Hi",     [440,130, 60, 18], 72, 0.0,127.0, [190, 34, 40, 16])
+# Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
+lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
+lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
+box("obj-14", "live.tab", None, [400, 190, 210, 20], 1, 3, ["", "", ""], {"varname": "mode", "parameter_enable": 1, "presentation": 1, "presentation_rect": [10, 88, 300, 18], "saved_attribute_attributes": {"valueof": {"parameter_longname": "mode", "parameter_shortname": "Mode", "parameter_type": 2, "parameter_enum": ["Edit Lo", "Edit Hi", "Watch In", "Watch Out"], "parameter_mmin": 0, "parameter_mmax": 3}}})
 # Learn button removed — Edit Lo/Hi mode captures played notes directly
-box("obj-16", "kslider", None, [400, 230, 340, 56], 1, 2, ["int", "int"], {"presentation": 1, "presentation_rect": [10, 106, 440, 40]})
+box("obj-16", "kslider", None, [400, 230, 340, 56], 1, 2, ["int", "int"], {"presentation": 1, "presentation_rect": [10, 112, 440, 38]})
 
 # --- labels (presentation) ---
-lbl("obj-40", "Bypass", [30,  9])
-lbl("obj-41", "Mute",   [120, 9])
-lbl("obj-42", "Lo",     [30, 33])
-lbl("obj-43", "Hi",     [128,33])
-lbl("obj-44", "Oct",    [10, 58])
-lbl("obj-45", "Tone",   [110,58])
+lbl("obj-70", "Global",         [10, 11], dim=True)
+lbl("obj-40", "Bypass",         [79, 11])
+lbl("obj-71", "no limits",      [127,11], dim=True)
+lbl("obj-41", "Mute",           [225,11])
+lbl("obj-72", "empty zone",     [263,11], dim=True)
+lbl("obj-73", "Limits",         [10, 36], dim=True)
+lbl("obj-42", "Lo",             [79, 36])
+lbl("obj-43", "Hi",             [173,36])
+lbl("obj-74", "Post transpose", [10, 62], dim=True)
+lbl("obj-44", "Oct",            [104,62])
+lbl("obj-45", "Tone",           [182,62])
 # (no Learn label — Edit auto-learns)
 
 # --- prepends (UI -> js) ---
