@@ -56,9 +56,9 @@ lnum("obj-7",  "loNote", "Lo",     [440,100, 60, 18], 48, 0.0,127.0, [48, 32, 42
 ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [108,32, 16, 16])
 lnum("obj-9",  "hiNote", "Hi",     [440,130, 60, 18], 72, 0.0,127.0, [146,32, 42, 17])
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [44, 57, 42, 17])
-lnum("obj-11", "semitone","Semi",  [440,160, 60, 18],  0, -12.0,12.0,[152,57, 42, 17])
+lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[152,57, 42, 17])
 box("obj-14", "live.tab", None, [400, 190, 210, 20], 1, 3, ["", "", ""], {"varname": "mode", "parameter_enable": 1, "presentation": 1, "presentation_rect": [10, 82, 210, 18], "saved_attribute_attributes": {"valueof": {"parameter_longname": "mode", "parameter_shortname": "Mode", "parameter_type": 2, "parameter_enum": ["Edit Lo", "Edit Hi", "Watch In", "Watch Out"], "parameter_mmin": 0, "parameter_mmax": 3}}})
-lbtn("obj-15", "learn",  "Learn",  [440,190, 24, 24], [228,82, 44, 16])
+# Learn button removed — Edit Lo/Hi mode captures played notes directly
 box("obj-16", "kslider", None, [400, 230, 340, 56], 1, 2, ["int", "int"], {"presentation": 1, "presentation_rect": [10, 106, 440, 40]})
 
 # --- labels (presentation) ---
@@ -67,13 +67,13 @@ lbl("obj-41", "Mute",   [120, 9])
 lbl("obj-42", "Lo",     [30, 33])
 lbl("obj-43", "Hi",     [128,33])
 lbl("obj-44", "Oct",    [10, 58])
-lbl("obj-45", "Semi",   [110,58])
-lbl("obj-46", "Learn", [230, 68], dim=True)
+lbl("obj-45", "Tone",   [110,58])
+# (no Learn label — Edit auto-learns)
 
 # --- prepends (UI -> js) ---
 pre = {"loon":"obj-6","lo":"obj-7","hion":"obj-8","hi":"obj-9","octaven":"obj-10",
        "semin":"obj-11","muteon":"obj-12","bypasson":"obj-13","moded":"obj-14",
-       "learnon":"obj-15","kbd":"obj-16"}
+       "kbd":"obj-16"}
 pid = {}
 y = 170
 for i,(msg,src) in enumerate(pre.items()):
