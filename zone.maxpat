@@ -444,39 +444,42 @@
       {
         "box": {
           "id": "obj-14",
-          "maxclass": "live.toggle",
+          "maxclass": "live.tab",
           "numinlets": 1,
-          "numoutlets": 1,
+          "numoutlets": 3,
           "patching_rect": [
             400,
             190,
-            24,
-            24
+            210,
+            20
           ],
           "outlettype": [
             "",
+            "",
             ""
           ],
-          "varname": "edit",
+          "varname": "mode",
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
             10,
-            84,
-            16,
-            16
+            82,
+            210,
+            18
           ],
           "saved_attribute_attributes": {
             "valueof": {
-              "parameter_longname": "edit",
-              "parameter_shortname": "Edit Hi",
+              "parameter_longname": "mode",
+              "parameter_shortname": "Mode",
               "parameter_type": 2,
               "parameter_enum": [
-                "off",
-                "on"
+                "Edit Lo",
+                "Edit Hi",
+                "Watch In",
+                "Watch Out"
               ],
               "parameter_mmin": 0,
-              "parameter_mmax": 1
+              "parameter_mmax": 3
             }
           }
         }
@@ -500,9 +503,9 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            136,
-            84,
-            24,
+            228,
+            82,
+            44,
             16
           ],
           "saved_attribute_attributes": {
@@ -707,12 +710,12 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            30,
-            385,
+            230,
+            368,
             120,
             18
           ],
-          "text": "Edit Lo/Hi \u00b7 Learn",
+          "text": "Learn",
           "fontsize": 10.0,
           "textcolor": [
             0.55,
@@ -722,8 +725,8 @@
           ],
           "presentation": 1,
           "presentation_rect": [
-            30,
-            85
+            230,
+            68
           ]
         }
       },
@@ -859,7 +862,7 @@
             110,
             22
           ],
-          "text": "prepend edited"
+          "text": "prepend moded"
         }
       },
       {
@@ -1352,6 +1355,18 @@
           ],
           "destination": [
             "obj-9",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            3
+          ],
+          "destination": [
+            "obj-16",
             0
           ]
         }

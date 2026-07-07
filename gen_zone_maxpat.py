@@ -57,8 +57,8 @@ ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [108,32, 16, 16])
 lnum("obj-9",  "hiNote", "Hi",     [440,130, 60, 18], 72, 0.0,127.0, [146,32, 42, 17])
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [44, 57, 42, 17])
 lnum("obj-11", "semitone","Semi",  [440,160, 60, 18],  0, -12.0,12.0,[152,57, 42, 17])
-ltog("obj-14", "edit",   "Edit Hi",[400,190, 24, 24], [10, 84, 16, 16])
-lbtn("obj-15", "learn",  "Learn",  [440,190, 24, 24], [136,84, 24, 16])
+box("obj-14", "live.tab", None, [400, 190, 210, 20], 1, 3, ["", "", ""], {"varname": "mode", "parameter_enable": 1, "presentation": 1, "presentation_rect": [10, 82, 210, 18], "saved_attribute_attributes": {"valueof": {"parameter_longname": "mode", "parameter_shortname": "Mode", "parameter_type": 2, "parameter_enum": ["Edit Lo", "Edit Hi", "Watch In", "Watch Out"], "parameter_mmin": 0, "parameter_mmax": 3}}})
+lbtn("obj-15", "learn",  "Learn",  [440,190, 24, 24], [228,82, 44, 16])
 box("obj-16", "kslider", None, [400, 230, 340, 56], 1, 2, ["int", "int"], {"presentation": 1, "presentation_rect": [10, 106, 440, 40]})
 
 # --- labels (presentation) ---
@@ -68,11 +68,11 @@ lbl("obj-42", "Lo",     [30, 33])
 lbl("obj-43", "Hi",     [128,33])
 lbl("obj-44", "Oct",    [10, 58])
 lbl("obj-45", "Semi",   [110,58])
-lbl("obj-46", "Edit Lo/Hi · Learn", [30, 85], dim=True)
+lbl("obj-46", "Learn", [230, 68], dim=True)
 
 # --- prepends (UI -> js) ---
 pre = {"loon":"obj-6","lo":"obj-7","hion":"obj-8","hi":"obj-9","octaven":"obj-10",
-       "semin":"obj-11","muteon":"obj-12","bypasson":"obj-13","edited":"obj-14",
+       "semin":"obj-11","muteon":"obj-12","bypasson":"obj-13","moded":"obj-14",
        "learnon":"obj-15","kbd":"obj-16"}
 pid = {}
 y = 170
@@ -97,7 +97,7 @@ for msg, src in pre.items():
 # --- feedback : js -> numbox (set = no re-output) ---
 line("obj-3", 1, "obj-31", 0); line("obj-31", 0, "obj-7", 0)
 line("obj-3", 2, "obj-32", 0); line("obj-32", 0, "obj-9", 0)
-# js outlet 3 (viz in/out) : reserved for a future jsui keyboard (2-color note display)
+line("obj-3", 3, "obj-16", 0)   # viz (Watch In/Out) -> kslider display
 
 patch = {"patcher": {
     "fileversion": 1,
