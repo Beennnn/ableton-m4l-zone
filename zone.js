@@ -14,7 +14,7 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 4;   // 0 = MIDI -> midiout ; 1 = Lo fb ; 2 = Hi fb ; 3 = keyboard (kslider) : hkeycolor + display notes
+outlets = 5;   // 0 = MIDI ; 1 = Lo fb ; 2 = Hi fb ; 3 = keyboard (kslider) hkeycolor + notes ; 4 = mode tab colour
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
@@ -58,10 +58,13 @@ function allOff() { for (var p in held) noteOff(Number(p)); }
 function kbd(n) { if (mode < 2) setBound(n); }        // keyboard click sets the armed bound (edit modes)
 function moded(v) {
     mode = clamp(v, 0, 3);
-    setColor(mode == 0 ? COL.lo : mode == 1 ? COL.hi : mode == 2 ? COL["in"] : COL.out);
+    var c = mode == 0 ? COL.lo : mode == 1 ? COL.hi : mode == 2 ? COL["in"] : COL.out;
+    setColor(c);                                          // kslider highlight -> mode colour
+    outlet(4, "activebgcolor", c[0], c[1], c[2], c[3]);   // mode tab active colour (candidate attributes)
+    outlet(4, "activetabcolor", c[0], c[1], c[2], c[3]);
     clearShown();
     if (mode == 0) showKey(loNote);
-    else if (mode == 1) showKey(hiNote);              // Watch modes : cleared, live notes fill in
+    else if (mode == 1) showKey(hiNote);                  // Watch modes : cleared, live notes fill in
 }
 function learnon(v)  { learning = v ? 1 : 0; }
 function loon(v)     { loOn = v ? 1 : 0; }
