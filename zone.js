@@ -1,14 +1,14 @@
-// zone.js — brain of the "Zone" Max for Live MIDI device (v3.1).
-// Keyboard zone / split filter, THEN octave + semitone shift, plus mute and bypass.
+// zone.js — brain of the "Zone" Max for Live MIDI device (v3.2).
+// Keyboard zone / split filter, THEN octave + tone (semitone) shift, plus mute and bypass.
 // One on-screen keyboard, driven by a MODE selector — with a consistent COLOR CODE:
-//   0 Edit Lo   (teal)   — click a key to set the low bound ; the current Lo key is lit teal
-//   1 Edit Hi   (violet) — click a key to set the high bound ; the current Hi key is lit violet
-//   2 Watch In  (blue)   — the keyboard lights the INCOMING note you play, in blue
-//   3 Watch Out (amber)  — the keyboard lights the OUTGOING (filtered + shifted) note, in amber
-// The keyboard's highlight colour follows the active mode, so the same code (Lo=teal, Hi=violet,
-// In=blue, Out=amber) is reused for the edits and the split-point / note colours.
+//   0 Edit Lo   (teal)   — play a note or click the keyboard to set the low bound  (Edit IS the learn)
+//   1 Edit Hi   (violet) — play a note or click the keyboard to set the high bound
+//   2 Watch In  (blue)   — the keyboard lights the INCOMING note you play
+//   3 Watch Out (amber)  — the keyboard lights the OUTGOING (filtered + shifted) note
+// The keyboard's highlight colour and the active mode-tab colour follow the mode, so the same code
+// (Lo=teal, Hi=violet, In=blue, Out=amber) is reused for the edits and the split-point / note colours.
 //
-// Signal path: bypass -> untouched ; mute -> dropped ; else if inside [Lo,Hi) -> pass, shifted by octave*12+semitone.
+// Signal path: bypass -> untouched ; mute -> dropped ; else if inside [Lo,Hi) -> pass, shifted by octave*12 + tone.
 // Note tracking: each held note remembers its OUTPUT pitch -> the note-off always matches, no stuck notes.
 //
 // MIT — free to use, modify and share.
@@ -18,7 +18,7 @@ outlets = 5;   // 0 = MIDI ; 1 = Lo fb ; 2 = Hi fb ; 3 = keyboard (kslider) hkey
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
-var mode = 0, learning = 0;
+var mode = 0;
 var held = {};                       // inPitch -> outPitch
 var shown = -1;                      // key currently lit for the Edit-mode bound
 
@@ -29,9 +29,9 @@ function clamp(v, a, b) { v = Math.round(v); return v < a ? a : (v > b ? b : v);
 function shift(p)       { return clamp(p + oct * 12 + semi, 0, 127); }
 function passes(p)      { return (!loOn || p >= loNote) && (!hiOn || p < hiNote); }
 
-function setColor(c) { outlet(3, "hkeycolor", c[0], c[1], c[2], c[3]); }   // kslider highlight colour
+function setColor(c) { outlet(3, "hkeycolor", c[0], c[1], c[2], c[3]); }
 function clearShown() { if (shown >= 0) { outlet(3, [shown, 0]); shown = -1; } }
-function showKey(n)   { clearShown(); outlet(3, [n, 100]); shown = n; }    // light a key (Edit-mode bound)
+function showKey(n)   { clearShown(); outlet(3, [n, 100]); shown = n; }
 
 function setBound(n) {
     if (mode == 1) { hiNote = clamp(n, 0, 127); outlet(2, hiNote); showKey(hiNote); }
@@ -40,7 +40,7 @@ function setBound(n) {
 function viz(inP, outP, vel) { if (mode == 2) outlet(3, [inP, vel]); else if (mode == 3) outlet(3, [outP, vel]); }
 
 function list(pitch, velocity) {
-    if (learning && mode < 2 && velocity > 0) { setBound(pitch); learning = 0; return; }
+    if (mode < 2 && velocity > 0) setBound(pitch);   // Edit Lo/Hi : a played note sets the armed bound (= learn)
     if (velocity > 0) noteOn(pitch, velocity);
     else              noteOff(pitch);
 }
@@ -55,7 +55,7 @@ function noteOff(p) {
 }
 function allOff() { for (var p in held) noteOff(Number(p)); }
 
-function kbd(n) { if (mode < 2) setBound(n); }        // keyboard click sets the armed bound (edit modes)
+function kbd(n) { if (mode < 2) setBound(n); }        // click on the on-screen keyboard sets the armed bound
 function moded(v) {
     mode = clamp(v, 0, 3);
     var c = mode == 0 ? COL.lo : mode == 1 ? COL.hi : mode == 2 ? COL["in"] : COL.out;
@@ -66,13 +66,12 @@ function moded(v) {
     if (mode == 0) showKey(loNote);
     else if (mode == 1) showKey(hiNote);                  // Watch modes : cleared, live notes fill in
 }
-function learnon(v)  { learning = v ? 1 : 0; }
 function loon(v)     { loOn = v ? 1 : 0; }
 function lo(v)       { loNote = clamp(v, 0, 127); if (mode == 0) showKey(loNote); }
 function hion(v)     { hiOn = v ? 1 : 0; }
 function hi(v)       { hiNote = clamp(v, 0, 127); if (mode == 1) showKey(hiNote); }
 function octaven(v)  { oct = clamp(v, -4, 4); }
-function semin(v)    { semi = clamp(v, -12, 12); }
+function semin(v)    { semi = clamp(v, -12, 12); }        // "Tone" control (semitones)
 function muteon(v)   { muted = v ? 1 : 0; if (muted) allOff(); }
 function bypasson(v) { allOff(); bypassed = v ? 1 : 0; }
 function panic()     { allOff(); }
