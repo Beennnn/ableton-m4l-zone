@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Zone — keyboard split for Max for Live</title>
+</head>
+<body style="margin:0;background:#131019">
+<style>
+  :root{
+    --bg:#131019; --surface:#1d1a26; --surface2:#252132; --line:#322d40;
+    --text:#ECEAF4; --muted:#9E97AD; --faint:#6E6880;
+    --bass:#35B98C; --keys:#E0A32E; --lead:#9B8CF0;
+    --mono:ui-monospace,"SF Mono",Menlo,Consolas,monospace;
+    --sans:ui-sans-serif,-apple-system,"Segoe UI",Roboto,sans-serif;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  .wrap{max-width:720px;margin:0 auto;padding:40px 22px 56px;font-family:var(--sans);
+    color:var(--text);background:var(--bg);line-height:1.6}
+  .eyebrow{font-family:var(--mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;
+    color:var(--keys);margin-bottom:14px}
+  h1{font-size:52px;font-weight:600;letter-spacing:-.02em;line-height:1}
+  .tag{color:var(--muted);font-size:17px;margin-top:14px;max-width:52ch}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:16px;padding:22px;margin-top:32px}
+  h2{font-size:15px;font-weight:600;letter-spacing:.02em;margin-bottom:6px}
+  .sub{color:var(--muted);font-size:14px;margin-bottom:18px;max-width:56ch}
+  .macros{display:flex;flex-direction:column;gap:14px;margin-bottom:22px}
+  .m{display:flex;align-items:center;gap:14px}
+  .m .lab{font-size:13px;color:var(--muted);min-width:172px}
+  .m .lab b{color:var(--text);font-weight:600}
+  .m .val{font-family:var(--mono);font-size:14px;color:var(--keys);min-width:74px;text-align:right}
+  input[type=range]{-webkit-appearance:none;appearance:none;flex:1;height:4px;border-radius:3px;
+    background:var(--line);outline:none;cursor:pointer}
+  input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
+    background:var(--text);border:3px solid var(--surface);cursor:pointer}
+  input[type=range]::-moz-range-thumb{width:16px;height:16px;border-radius:50%;background:var(--text);border:3px solid var(--surface);cursor:pointer}
+  svg{display:block;width:100%;height:auto}
+  .legend{display:flex;flex-wrap:wrap;gap:8px;margin-top:16px}
+  .lg{display:flex;align-items:center;gap:8px;background:var(--surface2);border-radius:9px;padding:7px 12px;font-size:13px}
+  .lg .dot{width:11px;height:11px;border-radius:3px;flex:none}
+  .lg .rng{font-family:var(--mono);font-size:12px;color:var(--faint)}
+  .feats{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}
+  .ft{display:flex;gap:10px;font-size:14px;color:var(--muted)}
+  .ft b{color:var(--text);font-weight:600}
+  .ft .k{color:var(--bass);font-family:var(--mono);flex:none}
+  footer{margin-top:34px;padding-top:18px;border-top:1px solid var(--line);
+    font-family:var(--mono);font-size:12px;color:var(--faint);display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}
+  @media(max-width:560px){h1{font-size:40px}.feats{grid-template-columns:1fr}.m .lab{min-width:130px}}
+</style>
+<main class="wrap">
+  <header>
+    <div class="eyebrow">Max for Live · MIDI device</div>
+    <h1>Zone</h1>
+    <p class="tag">Optimise l'usage du clavier d'un morceau à l'autre — un découpage adapté à chaque titre. Un split point, plusieurs zones, une macro : filtre de notes par plage, passthrough MIDI complet, bornes mappables.</p>
+  </header>
+
+  <section class="card">
+    <h2>Bouge le split</h2>
+    <p class="sub">Chaque macro tient un point de split. Déplace-le : les deux zones qui s'y touchent suivent ensemble.</p>
+    <div class="macros">
+      <div class="m"><span class="lab"><b>Macro 1</b> — split basse / claviers</span>
+        <input type="range" id="s1" min="36" max="84" step="1" value="48"><span class="val" id="v1"></span></div>
+      <div class="m"><span class="lab"><b>Macro 2</b> — split claviers / lead</span>
+        <input type="range" id="s2" min="36" max="84" step="1" value="60"><span class="val" id="v2"></span></div>
+    </div>
+    <svg id="kb" viewBox="0 0 580 164" role="img" aria-label="Clavier découpé en trois zones colorées"></svg>
+    <div class="legend" id="legend"></div>
+  </section>
+
+  <section class="card">
+    <h2>Lier les zones par macro</h2>
+    <p class="sub">Un <b>Zone</b> en tête de chaque chaîne du rack. Une macro se mappe sur deux bornes à la fois — la borne haute de la zone du bas et la borne basse de la zone du haut. Une seule macro, un split cohérent partagé.</p>
+    <svg id="rack" viewBox="0 0 600 264" role="img" aria-label="Schéma : deux macros pilotant les bornes de trois instances Zone dans un rack"></svg>
+  </section>
+
+  <section class="feats" id="feats"></section>
+
+  <footer><span>Zone.amxd · MIT</span><span>maxforlive.com</span></footer>
+</main>
+<script>
+(function(){
+  var LO=36,HI=84,kW=20,wH=118,bkH=74,kbY=40,band=28;
+  var NAMES=['C','C#','D','D#','E','F','F#','G','G#','A','A#','B'];
+  var isW=function(n){return [0,2,4,5,7,9,11].indexOf(n%12)>=0;};
+  var nm=function(n){return NAMES[n%12]+(Math.floor(n/12)-2);};
+  var Z=[{n:'Basse',i:'Sub-bass',c:'#35B98C'},{n:'Claviers',i:'Rhodes',c:'#E0A32E'},{n:'Lead',i:'Lead synth',c:'#9B8CF0'}];
+  var whites=[];for(var n=LO;n<=HI;n++)if(isW(n))whites.push(n);
+  var totW=whites.length*kW;
+  var xOf=function(n){var c=0;for(var m=LO;m<n;m++)if(isW(m))c++;return c*kW;};
+  var zoneOf=function(n,a,b){return n<a?0:(n<b?1:2);};
+  var kb=document.getElementById('kb'),rack=document.getElementById('rack'),legend=document.getElementById('legend');
+  var s1=document.getElementById('s1'),s2=document.getElementById('s2'),v1=document.getElementById('v1'),v2=document.getElementById('v2');
+
+  function keyboard(a,b){
+    var bx1=xOf(a),bx2=xOf(b),s='';
+    [[0,bx1,0],[bx1,bx2,1],[bx2,totW,2]].forEach(function(g){
+      if(g[1]<=g[0])return;
+      s+='<rect x="'+g[0]+'" y="0" width="'+(g[1]-g[0])+'" height="'+band+'" rx="3" fill="'+Z[g[2]].c+'"/>';
+      if(g[1]-g[0]>44)s+='<text x="'+((g[0]+g[1])/2)+'" y="'+(band/2+4)+'" text-anchor="middle" fill="#131019" font-size="12" font-family="var(--sans)" font-weight="600">'+Z[g[2]].n+'</text>';
+    });
+    whites.forEach(function(n){var z=zoneOf(n,a,b);
+      s+='<rect x="'+(xOf(n)+0.5)+'" y="'+kbY+'" width="'+(kW-1)+'" height="'+wH+'" rx="2.5" fill="#F7F5FA" stroke="'+Z[z].c+'" stroke-width="1.5"/>';});
+    for(var n2=LO;n2<=HI;n2++){if(isW(n2))continue;var z2=zoneOf(n2,a,b),x=xOf(n2)-6;
+      s+='<rect x="'+x+'" y="'+kbY+'" width="12" height="'+bkH+'" rx="2" fill="#211E2B"/><rect x="'+x+'" y="'+kbY+'" width="12" height="6" fill="'+Z[z2].c+'"/>';}
+    [[bx1],[bx2]].forEach(function(p){s+='<line x1="'+p[0]+'" y1="0" x2="'+p[0]+'" y2="'+(kbY+wH)+'" stroke="#ECEAF4" stroke-width="2"/>';});
+    kb.setAttribute('viewBox','0 0 '+totW+' '+(kbY+wH+6));kb.innerHTML=s;
+  }
+
+  function rackDiagram(a,b){
+    var rows=[{y:34,z:0,lo:null,hi:a},{y:117,z:1,lo:a,hi:b},{y:200,z:2,lo:b,hi:null}];
+    var zx=210,zw=158,ix=420,iw=150,h=54,mx=64,s='';
+    var link=function(x1,y1,x2,y2){return '<path d="M'+x1+' '+y1+' C'+((x1+x2)/2)+' '+y1+' '+((x1+x2)/2)+' '+y2+' '+x2+' '+y2+'" fill="none" stroke="#ECEAF4" stroke-width="1.6" opacity=".85"/>';};
+    var m1y=90,m2y=173;
+    s+=link(mx+22,m1y,zx,rows[0].y+h-12)+link(mx+22,m1y,zx,rows[1].y+12);
+    s+=link(mx+22,m2y,zx,rows[1].y+h-12)+link(mx+22,m2y,zx,rows[2].y+12);
+    [[m1y,'Macro 1',a],[m2y,'Macro 2',b]].forEach(function(m){
+      s+='<circle cx="'+mx+'" cy="'+m[0]+'" r="24" fill="#252132" stroke="#ECEAF4" stroke-width="1.6"/>';
+      s+='<text x="'+mx+'" y="'+(m[0]-2)+'" text-anchor="middle" fill="#ECEAF4" font-size="11" font-family="var(--mono)">'+nm(m[2])+'</text>';
+      s+='<text x="'+mx+'" y="'+(m[0]+11)+'" text-anchor="middle" fill="#9E97AD" font-size="9" font-family="var(--mono)">'+m[2]+'</text>';
+      s+='<text x="'+mx+'" y="'+(m[0]+38)+'" text-anchor="middle" fill="#9E97AD" font-size="10" font-family="var(--sans)">'+m[1]+'</text>';
+    });
+    rows.forEach(function(r){
+      s+='<rect x="'+zx+'" y="'+r.y+'" width="'+zw+'" height="'+h+'" rx="9" fill="#252132" stroke="'+Z[r.z].c+'" stroke-width="1.5"/>';
+      s+='<text x="'+(zx+12)+'" y="'+(r.y+19)+'" fill="#ECEAF4" font-size="12" font-family="var(--sans)" font-weight="600">Zone · '+Z[r.z].n+'</text>';
+      s+='<text x="'+(zx+12)+'" y="'+(r.y+38)+'" fill="'+(r.lo==null?'#6E6880':'#ECEAF4')+'" font-size="11" font-family="var(--mono)">Lo '+(r.lo==null?'off':nm(r.lo))+'</text>';
+      s+='<text x="'+(zx+80)+'" y="'+(r.y+38)+'" fill="'+(r.hi==null?'#6E6880':'#ECEAF4')+'" font-size="11" font-family="var(--mono)">Hi '+(r.hi==null?'off':nm(r.hi))+'</text>';
+      s+='<path d="M'+(zx+zw)+' '+(r.y+h/2)+' h'+(ix-zx-zw)+'" stroke="#322d40" stroke-width="1.5" marker-end="url(#ar)"/>';
+      s+='<rect x="'+ix+'" y="'+r.y+'" width="'+iw+'" height="'+h+'" rx="9" fill="#1d1a26" stroke="#322d40" stroke-width="1.5"/>';
+      s+='<text x="'+(ix+iw/2)+'" y="'+(r.y+h/2+4)+'" text-anchor="middle" fill="#ECEAF4" font-size="12.5" font-family="var(--sans)">'+Z[r.z].i+'</text>';
+    });
+    rack.innerHTML='<defs><marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" fill="#322d40"/></marker></defs>'+s;
+  }
+
+  function legendHtml(a,b){
+    var r=[[LO,a-1],[a,b-1],[b,HI]];
+    legend.innerHTML=Z.map(function(z,i){return '<div class="lg"><span class="dot" style="background:'+z.c+'"></span><span><b>'+z.n+'</b> · '+z.i+'</span><span class="rng">'+(r[i][1]<r[i][0]?'—':nm(r[i][0])+'–'+nm(r[i][1]))+'</span></div>';}).join('');
+  }
+  function render(e){
+    var a=+s1.value,b=+s2.value;
+    if(a>b){if(e&&e.target===s1){b=a;s2.value=a;}else{a=b;s1.value=b;}}
+    v1.textContent=nm(a)+' ('+a+')';v2.textContent=nm(b)+' ('+b+')';
+    keyboard(a,b);rackDiagram(a,b);legendHtml(a,b);
+  }
+  s1.addEventListener('input',render);s2.addEventListener('input',render);
+
+  var F=[['ti','Bornes Lo + Hi','chaque zone bornée en haut ET en bas — le Pitch natif ne fait que le bas'],
+    ['ti','Passthrough complet','CC, pitchbend, aftertouch, pédale : tout passe. SWAM garde son CC2'],
+    ['ti','Learn','clique Learn, joue une note, la borne est posée'],
+    ['ti','Zéro note coincée','le note-off part toujours, même si tu bouges la borne en jouant']];
+  document.getElementById('feats').innerHTML=F.map(function(f){return '<div class="ft"><span class="k">◆</span><span><b>'+f[1]+'</b> — '+f[2]+'</span></div>';}).join('');
+  render();
+})();
+</script>
+</body>
+</html>
