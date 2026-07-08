@@ -1,4 +1,4 @@
-// zone.js — brain of the "Zone" Max for Live MIDI device (v3.3).
+// zone.js — brain of the "Zone" Max for Live MIDI device (v3.4).
 // Keyboard zone / split filter, THEN octave + tone (semitone) shift, plus mute and bypass.
 // One on-screen keyboard, driven by a MODE selector :
 //   0 Edit Low  — play a note or click the keyboard to set the low bound  (Edit IS the learn)
@@ -27,6 +27,7 @@ var mode = 0;
 var held = {};                       // inPitch -> outPitch
 var shown = -1;                      // key currently lit for the Edit-mode bound
 var echo = 0;                        // 1 while we drive the kslider -> its echo must be ignored by kbd()
+var koff = 36;                       // kslider view offset (lowest displayed note) — 61 keys shown, scroll by octave
 
 var COL = { lo: [0.18, 0.69, 0.53, 1], hi: [0.55, 0.50, 0.91, 1], "in": [0.23, 0.62, 0.88, 1], out: [0.88, 0.64, 0.18, 1] };
 
@@ -63,6 +64,12 @@ function noteOff(p) {
 function allOff() { for (var p in held) noteOff(Number(p)); }
 
 function kbd(n) { if (echo) return; if (mode < 2) setBound(n); }   // real click sets the bound ; kslider echo is ignored
+
+// ---- keyboard view scroll (61 visible keys out of 128 ; arrows move one octave) ----
+function kview()  { echo = 1; outlet(3, "offset", koff); echo = 0; }
+function kleft()  { koff = Math.max(0, koff - 12); kview(); }
+function kright() { koff = Math.min(60, koff + 12); kview(); }      // 60 + 61 keys = top of MIDI range
+function loadbang() { kview(); moded(mode); }                       // restore view + mode colour when the device loads
 function moded(v) {
     mode = clamp(v, 0, 3);
     kcol(mode == 0 ? COL.lo : mode == 1 ? COL.hi : mode == 2 ? COL["in"] : COL.out);   // keyboard highlight -> mode colour
