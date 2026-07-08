@@ -5,6 +5,11 @@ program: a **Basse** chain (left/low) + a **Piano** chain (right/high), one
 shared split point, and mode macros — like the split/layer section of a
 hardware stage keyboard.
 
+![Zone Keyboard rack in the demo set — Split Point / Full Bass / Full Piano / Split macros, Basse + Piano chains](zone-keyboard-set.png)
+
+The demo set has two MIDI tracks: **Zone Keyboard** (the macro rack) and
+**Zone solo** (the bare device + an instrument, the simple one-track usage).
+
 ## Files
 
 - **`Zone Keyboard.adg`** — the rack preset. Drop it into
