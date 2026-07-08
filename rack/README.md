@@ -1,52 +1,46 @@
 # Zone Keyboard — rack template
 
 A ready-to-load **Instrument Rack** that turns Zone into a stage-keyboard
-program: several sounds, each **solo / split / layer / split + layer**, with the
-split points **synced by a macro**.
+program: a **Basse** chain (left/low) + a **Piano** chain (right/high), one
+shared split point, and mode macros — like the split/layer section of a
+hardware stage keyboard.
 
-## Idea
+## Files
 
-One chain per sound. A **Zone** MIDI device sits at the head of each chain and
-filters which keys reach that chain's instrument. Because Zone's **Low** / **High**
-bounds are automatable, a single **rack macro** can drive the split point across
-two chains at once (High of A = Low of B) — move one knob, the split moves
-everywhere. Native Live key-zones can't be macro-mapped; Zone's can. That's the
-whole point of doing it with the device instead of the built-in chain zones.
+- **`Zone Keyboard.adg`** — the rack preset. Drop it into
+  `User Library/Presets/Instruments/Instrument Rack/` (or drag it straight
+  onto a MIDI track). Requires `zone.amxd` installed (see repo root).
+- **`Zone Keyboard Template Project/Zone Keyboard Template.als`** — a whole
+  Live set with the rack already on track 1, ready to play.
 
-| Physical keyboard | In this rack |
-|---|---|
-| **Solo** (1 sound, whole keyboard) | one chain, Zone Low/High off |
-| **Split** (A low / B high) | Zone A `High` = point, Zone B `Low` = point, **1 macro → both** |
-| **Layer** (A+B same keys) | both chains full range (Low/High off) |
-| **Split + Layer** | mix — e.g. bass `[..B1]`, two layered sounds `[C2..]` |
+Both ship with **Drift** as placeholder instruments — swap in your own sounds
+(Keyscape, Omnisphere, …) inside each chain, the Zone devices and macros stay.
 
-## Macros
+## The 4 macros
 
-- **Split 1·2** → chain 1 `High` + chain 2 `Low`  (one knob = the 1|2 split point)
-- **Split 2·3** → chain 2 `High` + chain 3 `Low`
-- **Layer 3**   → chain 3 `Low on` / `High on`  (fold sound 3 in/out as a layer)
+| Macro | Default | What it does |
+|---|---|---|
+| **Split Point** | 60 (C3) | moves Basse **High** *and* Piano **Low** together — one knob slides the split across both chains |
+| **Full Bass** | 0 | turn up → Basse's high limit turns **off** (bass everywhere) and Piano is **muted** |
+| **Full Piano** | 0 | turn up → Piano's low limit turns **off** and Basse is **muted** |
+| **Split** | 127 | at 127 both Zone filters are active (**split** mode) ; at 0 both Zones are **bypassed** → both sounds across the whole keyboard = **layer** mode |
 
-## Build / customise (in Live)
+Modes, in stage terms:
 
-A rack embedding a Max device must be saved **by Live** to be a valid `.adg`, so
-build it once and re-save:
+- **Split** (default): Full Bass 0 · Full Piano 0 · Split 127
+- **Full bass**: Full Bass 127
+- **Full piano**: Full Piano 127
+- **Layer**: Split 0 (bonus — the same knob morphs split ↔ layer)
 
-1. New MIDI track → drop **zone.amxd** on it (MIDI-effect slot, before the instrument).
-2. Drop your instrument after it (Keyscape, Omnisphere, …).
-3. Select both devices → **⌘G** → Instrument Rack.
-4. Open the chain list → **duplicate the chain ×2** (3 sounds).
-5. Macro view → **Configure** → click a macro, then click chain 1 Zone **High**
-   *and* chain 2 Zone **Low** → rename "Split 1·2". Repeat for "Split 2·3".
-6. Rack title bar **floppy → Save** as `Zone Keyboard`.
+Each macro is a plain rack macro: MIDI-map it, automate it, or drive it from
+a Stream Deck CC (the FNK_Browse `< Lower` / `> Upper` dials pattern).
 
-## Use live
+## How it was built (for the curious / to rebuild)
 
-- Load `Zone Keyboard`, drop an instrument in each chain.
-- Turn **Split 1·2** to move the low split; **Split 2·3** for the high one.
-- Bypass a chain's Zone (or Low/High off) to make that sound a full-range layer.
-- Octave / Tone per chain to transpose a sound after the split.
-
----
-
-*The `.adg` file lives next to this README once exported from Live — it references
-`zone.amxd` by path, so keep the device installed.*
+1. MIDI track → `zone.amxd` + instrument → select both → ⌘G (Instrument Rack).
+2. Duplicate the chain, name them `Basse` / `Piano`.
+3. Basse: **Hi on** + High=60 · Piano: **Lo on** + Low=60.
+4. Macro mappings are Live's `<KeyMidi>` blocks with `Channel=16` and
+   `NoteOrController=<macro index>` on each M4L parameter — patched directly
+   in the gzipped XML (see repo history), since that's scriptable and exact.
+   Inverted ranges (`Min=1 Max=0`) implement the "turn up to disable" targets.
