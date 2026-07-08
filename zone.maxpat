@@ -473,8 +473,8 @@
               "parameter_shortname": "Mode",
               "parameter_type": 2,
               "parameter_enum": [
-                "Edit Lo",
-                "Edit Hi",
+                "Edit Low",
+                "Edit High",
                 "Watch In",
                 "Watch Out"
               ],
@@ -502,11 +502,69 @@
           ],
           "presentation": 1,
           "presentation_rect": [
+            26,
+            112,
+            408,
+            38
+          ],
+          "offset": 36,
+          "range": 61
+        }
+      },
+      {
+        "box": {
+          "id": "obj-17",
+          "maxclass": "textbutton",
+          "numinlets": 1,
+          "numoutlets": 3,
+          "patching_rect": [
+            640,
+            230,
+            20,
+            20
+          ],
+          "outlettype": [
+            "",
+            "",
+            ""
+          ],
+          "text": "<",
+          "presentation": 1,
+          "presentation_rect": [
             10,
             112,
-            440,
+            14,
             38
-          ]
+          ],
+          "fontsize": 9.0
+        }
+      },
+      {
+        "box": {
+          "id": "obj-18",
+          "maxclass": "textbutton",
+          "numinlets": 1,
+          "numoutlets": 3,
+          "patching_rect": [
+            670,
+            230,
+            20,
+            20
+          ],
+          "outlettype": [
+            "",
+            "",
+            ""
+          ],
+          "text": ">",
+          "presentation": 1,
+          "presentation_rect": [
+            436,
+            112,
+            14,
+            38
+          ],
+          "fontsize": 9.0
         }
       },
       {
@@ -980,6 +1038,36 @@
       },
       {
         "box": {
+          "id": "obj-30",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "patching_rect": [
+            400,
+            430,
+            110,
+            22
+          ],
+          "text": "prepend kleft"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-31",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "patching_rect": [
+            400,
+            456,
+            110,
+            22
+          ],
+          "text": "prepend kright"
+        }
+      },
+      {
+        "box": {
           "id": "obj-31",
           "maxclass": "newobj",
           "numinlets": 1,
@@ -1362,6 +1450,54 @@
         "patchline": {
           "source": [
             "obj-29",
+            0
+          ],
+          "destination": [
+            "obj-3",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-17",
+            0
+          ],
+          "destination": [
+            "obj-30",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-30",
+            0
+          ],
+          "destination": [
+            "obj-3",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-18",
+            0
+          ],
+          "destination": [
+            "obj-31",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-31",
             0
           ],
           "destination": [

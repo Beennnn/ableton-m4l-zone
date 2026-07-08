@@ -61,9 +61,12 @@ lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [193, 34, 3
 # Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
 lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
-box("obj-14", "live.tab", None, [400, 190, 210, 20], 1, 3, ["", "", ""], {"varname": "mode", "parameter_enable": 1, "presentation": 1, "presentation_rect": [10, 88, 300, 18], "saved_attribute_attributes": {"valueof": {"parameter_longname": "mode", "parameter_shortname": "Mode", "parameter_type": 2, "parameter_enum": ["Edit Lo", "Edit Hi", "Watch In", "Watch Out"], "parameter_mmin": 0, "parameter_mmax": 3}}})
+box("obj-14", "live.tab", None, [400, 190, 210, 20], 1, 3, ["", "", ""], {"varname": "mode", "parameter_enable": 1, "presentation": 1, "presentation_rect": [10, 88, 300, 18], "saved_attribute_attributes": {"valueof": {"parameter_longname": "mode", "parameter_shortname": "Mode", "parameter_type": 2, "parameter_enum": ["Edit Low", "Edit High", "Watch In", "Watch Out"], "parameter_mmin": 0, "parameter_mmax": 3}}})
 # Learn button removed — Edit Lo/Hi mode captures played notes directly
-box("obj-16", "kslider", None, [400, 230, 340, 56], 1, 2, ["int", "int"], {"presentation": 1, "presentation_rect": [10, 112, 440, 38]})
+box("obj-16", "kslider", None, [400, 230, 340, 56], 1, 2, ["int", "int"], {"presentation": 1, "presentation_rect": [26, 112, 408, 38], "offset": 36, "range": 61})
+# octave-scroll arrows for the keyboard view (textbutton = plain UI, not a Live parameter)
+box("obj-17", "textbutton", None, [640, 230, 20, 20], 1, 3, ["", "", ""], {"text": "<", "presentation": 1, "presentation_rect": [10, 112, 14, 38], "fontsize": 9.0})
+box("obj-18", "textbutton", None, [670, 230, 20, 20], 1, 3, ["", "", ""], {"text": ">", "presentation": 1, "presentation_rect": [436, 112, 14, 38], "fontsize": 9.0})
 
 # --- labels (presentation) ---
 lbl("obj-70", "Global",         [10, 11], dim=True)
@@ -82,7 +85,7 @@ lbl("obj-45", "Tone",           [182,62])
 # --- prepends (UI -> js) ---
 pre = {"loon":"obj-6","lo":"obj-7","hion":"obj-8","hi":"obj-9","octaven":"obj-10",
        "semin":"obj-11","muteon":"obj-12","bypasson":"obj-13","moded":"obj-14",
-       "kbd":"obj-16"}
+       "kbd":"obj-16","kleft":"obj-17","kright":"obj-18"}
 pid = {}
 y = 170
 for i,(msg,src) in enumerate(pre.items()):
