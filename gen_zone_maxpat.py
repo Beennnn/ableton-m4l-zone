@@ -45,7 +45,7 @@ def lbl(id, text, pres, dim=False, w=None):
 # --- MIDI flow (patching view) ---
 box("obj-1", "newobj", "midiin",       [ 30,  30,  45, 22], 1, 1, ["int"])
 box("obj-2", "newobj", "midiparse",    [ 30,  80,  62, 22], 1, 7, ["", "", "", "int", "int", "int", "int"])
-box("obj-3", "newobj", "js zone.js",   [ 30, 360,  90, 22], 1, 5, ["", "", "", "", ""])
+box("obj-3", "newobj", "js zone.js",   [ 30, 360,  90, 22], 1, 4, ["", "", "", ""])
 box("obj-4", "newobj", "midiformat",   [200, 300,  66, 22], 7, 1, ["int"])
 box("obj-5", "newobj", "midiout",      [ 30, 440,  50, 22], 1, 0)
 
@@ -106,8 +106,7 @@ for msg, src in pre.items():
 # --- feedback : js -> numbox (set = no re-output) ---
 line("obj-3", 1, "obj-31", 0); line("obj-31", 0, "obj-7", 0)
 line("obj-3", 2, "obj-32", 0); line("obj-32", 0, "obj-9", 0)
-line("obj-3", 3, "obj-16", 0)   # viz (Watch In/Out) -> kslider display
-line("obj-3", 4, "obj-14", 0)   # mode colour -> mode tab (active colour)
+line("obj-3", 3, "obj-16", 0)   # viz + colour + note display -> kslider
 
 patch = {"patcher": {
     "fileversion": 1,

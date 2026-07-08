@@ -72,7 +72,7 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 5,
+          "numoutlets": 4,
           "patching_rect": [
             30,
             360,
@@ -81,7 +81,6 @@
           ],
           "text": "js zone.js",
           "outlettype": [
-            "",
             "",
             "",
             "",
@@ -1427,18 +1426,6 @@
           ],
           "destination": [
             "obj-16",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
-            "obj-3",
-            4
-          ],
-          "destination": [
-            "obj-14",
             0
           ]
         }
