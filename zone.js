@@ -1,4 +1,4 @@
-// zone.js — brain of the "Zone" Max for Live MIDI device (v3.4).
+// zone.js — brain of the "Zone" Max for Live MIDI device (v0.1).
 // Keyboard zone / split filter, THEN octave + tone (semitone) shift, plus mute and bypass.
 // One on-screen keyboard, driven by a MODE selector :
 //   0 Edit Low  — play a note or click the keyboard to set the low bound  (Edit IS the learn)
