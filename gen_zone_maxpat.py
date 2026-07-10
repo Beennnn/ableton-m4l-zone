@@ -87,7 +87,7 @@ lbl("obj-70", "Global",         [10, 11], dim=True)
 lbl("obj-40", "Bypass",         [79, 11])
 lbl("obj-71", "no limits",      [127,11], dim=True)
 lbl("obj-41", "Mute",           [225,11])
-lbl("obj-72", "empty zone",     [263,11], dim=True)
+lbl("obj-72", "mute track",     [263,11], dim=True)
 lbl("obj-73", "Limits",         [10, 36], dim=True)
 # "Low"/"High" word labels dropped — the color-coded note names (teal=low, violet=high, matching
 # the keyboard edit colours) + left-to-right order carry it, and the row is titled "Limits".
