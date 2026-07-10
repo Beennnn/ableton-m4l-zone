@@ -245,29 +245,33 @@
       {
         "box": {
           "id": "obj-17",
-          "maxclass": "textbutton",
+          "maxclass": "live.button",
           "numinlets": 1,
-          "numoutlets": 3,
+          "numoutlets": 1,
           "patching_rect": [
             640,
             100,
-            40,
+            20,
             20
           ],
           "outlettype": [
-            "",
-            "",
-            ""
+            "bang"
           ],
-          "text": "learn",
+          "varname": "learnLo",
+          "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            66,
+            70,
             34,
-            30,
+            16,
             16
           ],
-          "fontsize": 8.0
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_longname": "learnLo",
+              "parameter_shortname": "Learn Lo"
+            }
+          }
         }
       },
       {
@@ -290,7 +294,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            100,
+            92,
             34,
             34,
             16
@@ -325,7 +329,7 @@
           "text": "C2",
           "presentation": 1,
           "presentation_rect": [
-            136,
+            128,
             34,
             30,
             16
@@ -360,7 +364,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            205,
+            200,
             34,
             15,
             15
@@ -383,29 +387,33 @@
       {
         "box": {
           "id": "obj-18",
-          "maxclass": "textbutton",
+          "maxclass": "live.button",
           "numinlets": 1,
-          "numoutlets": 3,
+          "numoutlets": 1,
           "patching_rect": [
             640,
             100,
-            40,
+            20,
             20
           ],
           "outlettype": [
-            "",
-            "",
-            ""
+            "bang"
           ],
-          "text": "learn",
+          "varname": "learnHi",
+          "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            223,
+            222,
             34,
-            30,
+            16,
             16
           ],
-          "fontsize": 8.0
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_longname": "learnHi",
+              "parameter_shortname": "Learn Hi"
+            }
+          }
         }
       },
       {
@@ -428,7 +436,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            257,
+            244,
             34,
             34,
             16
@@ -463,7 +471,7 @@
           "text": "C4",
           "presentation": 1,
           "presentation_rect": [
-            293,
+            280,
             34,
             30,
             16
@@ -499,7 +507,7 @@
           "presentation": 1,
           "presentation_rect": [
             130,
-            60,
+            72,
             40,
             16
           ],
@@ -539,7 +547,7 @@
           "presentation": 1,
           "presentation_rect": [
             214,
-            60,
+            72,
             40,
             16
           ],
@@ -734,13 +742,71 @@
       },
       {
         "box": {
+          "id": "obj-46",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            66,
+            352,
+            120,
+            18
+          ],
+          "text": "learn",
+          "fontsize": 10.0,
+          "textcolor": [
+            0.55,
+            0.55,
+            0.55,
+            1.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            66,
+            52,
+            32,
+            15
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-47",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            218,
+            352,
+            120,
+            18
+          ],
+          "text": "learn",
+          "fontsize": 10.0,
+          "textcolor": [
+            0.55,
+            0.55,
+            0.55,
+            1.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            218,
+            52,
+            32,
+            15
+          ]
+        }
+      },
+      {
+        "box": {
           "id": "obj-74",
           "maxclass": "comment",
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
             10,
-            362,
+            374,
             120,
             18
           ],
@@ -755,7 +821,7 @@
           "presentation": 1,
           "presentation_rect": [
             10,
-            62,
+            74,
             86,
             15
           ]
@@ -769,7 +835,7 @@
           "numoutlets": 0,
           "patching_rect": [
             104,
-            362,
+            374,
             120,
             18
           ],
@@ -784,7 +850,7 @@
           "presentation": 1,
           "presentation_rect": [
             104,
-            62,
+            74,
             20,
             15
           ]
@@ -798,7 +864,7 @@
           "numoutlets": 0,
           "patching_rect": [
             182,
-            362,
+            374,
             120,
             18
           ],
@@ -813,7 +879,7 @@
           "presentation": 1,
           "presentation_rect": [
             182,
-            62,
+            74,
             26,
             15
           ]
