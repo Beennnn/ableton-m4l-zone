@@ -60,16 +60,18 @@ box("obj-5", "newobj", "midiout",      [ 30, 440,  50, 22], 1, 0)
 ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60,  9, 15, 15])
 ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206,  9, 15, 15])
 # Limits row (y~34) : Lo + Hi bounds, kept close together
-ltog("obj-6",  "loOn",   "Lo on",  [400,100, 24, 24], [ 60, 34, 15, 15])
-lnum("obj-7",  "loNote", "Low",    [440,100, 60, 18], 48, 0.0,127.0, [101, 34, 34, 16])  # raw MIDI value (editable) ; note name shown read-only by obj-60
-ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [146, 34, 15, 15])
-lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [193, 34, 34, 16])  # raw MIDI value (editable) ; note name shown read-only by obj-61
-# Read-only note-name displays (comment, NOT a Live parameter — driven by zone.js outlets 4/5 via
-# a "set <name>" message). Placed on the right of the limits row; drag them in Max presentation
-# mode to taste. Touching the numbox's own unit style broke device instantiation, so this stays
-# a separate, parameter-free label.
-box("obj-60", "comment", "C2", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [235, 34, 40, 15], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.31, 0.78, 0.60, 1.0]})
-box("obj-61", "comment", "C4", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [280, 34, 40, 15], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.55, 0.50, 0.91, 1.0]})
+# Limits row grouped as [toggle][value][note-name] per side, so the raw MIDI number and its note
+# name sit together. loOn/Low#/Low-name, then hiOn/High#/High-name.
+ltog("obj-6",  "loOn",   "Lo on",  [400,100, 24, 24], [ 40, 34, 15, 15])
+lnum("obj-7",  "loNote", "Low",    [440,100, 60, 18], 48, 0.0,127.0, [ 58, 34, 34, 16])  # raw MIDI value (editable) ; note name in obj-60 right after it
+ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [190, 34, 15, 15])
+lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [208, 34, 34, 16])  # raw MIDI value (editable) ; note name in obj-61 right after it
+# Read-only note-name displays (comment, NOT a Live parameter — driven by zone.js outlets 4/5 via a
+# "set <name>" message). Sit immediately right of each value; light tint + fontsize 11 for legibility
+# on the grey device. Touching the numbox's own unit style broke device instantiation, so this stays
+# a separate, parameter-free label. Nudge in Max presentation mode to taste.
+box("obj-60", "comment", "C2", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [ 94, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.51, 0.88, 0.73, 1.0]})
+box("obj-61", "comment", "C4", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [244, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.73, 0.69, 0.97, 1.0]})
 # Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
 lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
@@ -87,8 +89,8 @@ lbl("obj-71", "no limits",      [127,11], dim=True)
 lbl("obj-41", "Mute",           [225,11])
 lbl("obj-72", "empty zone",     [263,11], dim=True)
 lbl("obj-73", "Limits",         [10, 36], dim=True)
-lbl("obj-42", "Low",            [78, 36])
-lbl("obj-43", "High",           [164,36])
+# "Low"/"High" word labels dropped — the color-coded note names (teal=low, violet=high, matching
+# the keyboard edit colours) + left-to-right order carry it, and the row is titled "Limits".
 lbl("obj-74", "Post transpose", [10, 62], dim=True)
 lbl("obj-44", "Oct",            [104,62])
 lbl("obj-45", "Tone",           [182,62])
