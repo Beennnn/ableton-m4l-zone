@@ -757,7 +757,7 @@
             120,
             18
           ],
-          "text": "empty zone",
+          "text": "mute track",
           "fontsize": 10.0,
           "textcolor": [
             0.55,
