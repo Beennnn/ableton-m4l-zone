@@ -19,7 +19,7 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 6;   // 0 = MIDI ; 1 = Low feedback ; 2 = High feedback ; 3 = keyboard (kslider) colour + note display ; 4 = Low note-name ; 5 = High note-name
+outlets = 7;   // 0 = MIDI ; 1 = Low feedback ; 2 = High feedback ; 3 = keyboard (kslider) colour + note display ; 4 = Low note-name ; 5 = High note-name ; 6 = visible keyboard range
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
@@ -46,6 +46,9 @@ function noteName(n) { n = clamp(n, 0, 127); return NOTE_NAMES[n % 12] + (Math.f
 // unguarded throw there silently kills note output. Swallow it: worst case the name label doesn't
 // update until the device is fully reloaded; notes ALWAYS keep flowing.
 function names()     { try { outlet(4, "set", noteName(loNote)); outlet(5, "set", noteName(hiNote)); } catch (e) {} }
+// Visible keyboard range readout (outlet 6): the kslider shows 61 keys from koff, so min = koff,
+// max = koff + 60. Updates on every scroll (kview) so you always see where you are in the 128 notes.
+function viewRange() { try { outlet(6, "set", noteName(koff) + "-" + noteName(koff + 60)); } catch (e) {} }
 
 // every programmatic send to the kslider raises `echo` so its outlet bounce-back is ignored in kbd()
 function kcol(c)     { echo = 1; outlet(3, "hkeycolor", c[0], c[1], c[2], c[3]); echo = 0; }
@@ -79,7 +82,7 @@ function allOff() { for (var p in held) noteOff(Number(p)); }
 function kbd(n) { if (echo) return; if (mode < 2) setBound(n); }   // real click sets the bound ; kslider echo is ignored
 
 // ---- keyboard view scroll (61 visible keys out of 128 ; arrows move one octave) ----
-function kview()  { echo = 1; outlet(3, "offset", koff); echo = 0; }
+function kview()  { echo = 1; outlet(3, "offset", koff); echo = 0; viewRange(); }
 function kleft()  { koff = Math.max(0, koff - 12); kview(); }
 function kright() { koff = Math.min(67, koff + 12); kview(); }      // 67 + 60 = note 127 -> the top 7 notes (121-127) stay reachable (was 60, which capped the view at 120)
 function loadbang() { kview(); moded(mode); names(); }               // restore view + mode colour + note names when the device loads

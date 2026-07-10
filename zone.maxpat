@@ -72,7 +72,7 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 6,
+          "numoutlets": 7,
           "patching_rect": [
             30,
             360,
@@ -81,6 +81,7 @@
           ],
           "text": "js zone.js",
           "outlettype": [
+            "",
             "",
             "",
             "",
@@ -419,6 +420,36 @@
             0.36,
             0.14,
             0.58,
+            1.0
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-62",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            520,
+            160,
+            70,
+            18
+          ],
+          "text": "F#0-F#5",
+          "presentation": 1,
+          "presentation_rect": [
+            346,
+            99,
+            90,
+            13
+          ],
+          "fontsize": 9.0,
+          "textjustification": 2,
+          "textcolor": [
+            0.0,
+            0.0,
+            0.0,
             1.0
           ]
         }
@@ -1590,6 +1621,18 @@
           ],
           "destination": [
             "obj-61",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            6
+          ],
+          "destination": [
+            "obj-62",
             0
           ]
         }
