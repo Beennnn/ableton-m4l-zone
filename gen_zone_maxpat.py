@@ -51,7 +51,7 @@ def lbl(id, text, pres, dim=False, w=None):
 # --- MIDI flow (patching view) ---
 box("obj-1", "newobj", "midiin",       [ 30,  30,  45, 22], 1, 1, ["int"])
 box("obj-2", "newobj", "midiparse",    [ 30,  80,  62, 22], 1, 7, ["", "", "", "int", "int", "int", "int"])
-box("obj-3", "newobj", "js zone.js",   [ 30, 360,  90, 22], 1, 6, ["", "", "", "", "", ""])  # +2 outlets: 4=Low note-name, 5=High note-name
+box("obj-3", "newobj", "js zone.js",   [ 30, 360,  90, 22], 1, 7, ["", "", "", "", "", "", ""])  # outlets 4=Low name, 5=High name, 6=visible keyboard range
 box("obj-4", "newobj", "midiformat",   [200, 300,  66, 22], 7, 1, ["int"])
 box("obj-5", "newobj", "midiout",      [ 30, 440,  50, 22], 1, 0)
 
@@ -72,6 +72,8 @@ lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [208, 34, 3
 # a separate, parameter-free label. Nudge in Max presentation mode to taste.
 box("obj-60", "comment", "C2", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [ 94, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.00, 0.44, 0.30, 1.0]})
 box("obj-61", "comment", "C4", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [244, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.36, 0.14, 0.58, 1.0]})
+# visible keyboard range readout (driven by zone.js outlet 6), top-right above the keyboard, black
+box("obj-62", "comment", "F#0-F#5", [520, 160, 70, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [346, 99, 90, 13], "fontsize": 9.0, "textjustification": 2, "textcolor": [0.0, 0.0, 0.0, 1.0]})
 # Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
 lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
@@ -129,6 +131,7 @@ line("obj-3", 2, "obj-51", 0); line("obj-51", 0, "obj-9", 0)
 line("obj-3", 3, "obj-16", 0)   # viz + colour + note display -> kslider
 line("obj-3", 4, "obj-60", 0)   # Low note-name  -> comment  (js sends "set <name>")
 line("obj-3", 5, "obj-61", 0)   # High note-name -> comment
+line("obj-3", 6, "obj-62", 0)   # visible keyboard range -> comment
 
 patch = {"patcher": {
     "fileversion": 1,
