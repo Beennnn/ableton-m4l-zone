@@ -386,9 +386,9 @@
           "fontsize": 11.0,
           "textjustification": 0,
           "textcolor": [
-            0.51,
-            0.88,
-            0.73,
+            0.0,
+            0.44,
+            0.3,
             1.0
           ]
         }
@@ -416,9 +416,9 @@
           "fontsize": 11.0,
           "textjustification": 0,
           "textcolor": [
-            0.73,
-            0.69,
-            0.97,
+            0.36,
+            0.14,
+            0.58,
             1.0
           ]
         }

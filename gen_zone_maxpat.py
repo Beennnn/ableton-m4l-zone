@@ -70,8 +70,8 @@ lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [208, 34, 3
 # "set <name>" message). Sit immediately right of each value; light tint + fontsize 11 for legibility
 # on the grey device. Touching the numbox's own unit style broke device instantiation, so this stays
 # a separate, parameter-free label. Nudge in Max presentation mode to taste.
-box("obj-60", "comment", "C2", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [ 94, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.51, 0.88, 0.73, 1.0]})
-box("obj-61", "comment", "C4", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [244, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.73, 0.69, 0.97, 1.0]})
+box("obj-60", "comment", "C2", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [ 94, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.00, 0.44, 0.30, 1.0]})
+box("obj-61", "comment", "C4", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [244, 34, 32, 16], "fontsize": 11.0, "textjustification": 0, "textcolor": [0.36, 0.14, 0.58, 1.0]})
 # Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
 lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
