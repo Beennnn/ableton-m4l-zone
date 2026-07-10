@@ -33,9 +33,13 @@ def ltog(id, var, short, rect, pres):
             "parameter_longname": var, "parameter_shortname": short, "parameter_type": 2,
             "parameter_enum": ["off", "on"], "parameter_mmin": 0, "parameter_mmax": 1}}})
 
-def btn(id, text, pres):   # plain UI textbutton (NOT a Live parameter) — used for the Learn buttons
-    box(id, "textbutton", None, [640, 100, 40, 20], 1, 3, ["", "", ""],
-        {"text": text, "presentation": 1, "presentation_rect": pres, "fontsize": 8.0})
+def learnbtn(id, var, short, pres):   # live.button — the reliable momentary button in M4L.
+    # (Plain textbutton does NOT fire clicks through in this device — that was the dead ">"/learn
+    # bug; every live.* control works, so use live.button.) It's a mappable parameter (bonus: you
+    # can map a footswitch to Learn). Pair it with a small "learn" comment label for clarity.
+    box(id, "live.button", None, [640, 100, 20, 20], 1, 1, ["bang"],
+        {"varname": var, "parameter_enable": 1, "presentation": 1, "presentation_rect": pres,
+         "saved_attribute_attributes": {"valueof": {"parameter_longname": var, "parameter_shortname": short}}})
 
 def note(id, text, pres, color):   # read-only note-name label (comment) driven by zone.js
     box(id, "comment", text, [520, 100, 44, 18], 1, 0, None,
@@ -57,18 +61,18 @@ box("obj-5", "newobj", "midiout",    [ 30, 440,  50, 22], 1, 0)
 # Global row (y~9) : Bypass = let everything through raw ; Mute = block all output
 ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60,  9, 15, 15])
 ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206,  9, 15, 15])
-# Limits row (y~34) : per side -> [on toggle][learn button][MIDI value][note name]
+# Limits row (y~34) : per side -> [on toggle][learn live.button][MIDI value][note name]
 ltog("obj-6", "loOn",   "Lo on",  [400, 100, 24, 24], [ 48, 34, 15, 15])
-btn ("obj-17", "learn", [ 66, 34, 30, 16])
-lnum("obj-7", "loNote", "Low",    [440, 100, 60, 18], 48, 0.0, 127.0, [100, 34, 34, 16])
-note("obj-60", "C2", [136, 34, 30, 16], [0.00, 0.44, 0.30, 1.0])
-ltog("obj-8", "hiOn",   "Hi on",  [400, 130, 24, 24], [205, 34, 15, 15])
-btn ("obj-18", "learn", [223, 34, 30, 16])
-lnum("obj-9", "hiNote", "High",   [440, 130, 60, 18], 72, 0.0, 127.0, [257, 34, 34, 16])
-note("obj-61", "C4", [293, 34, 30, 16], [0.36, 0.14, 0.58, 1.0])
-# Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
-lnum("obj-10", "octave",  "Octave", [400, 160, 60, 18],  0, -4.0,  4.0, [130, 60, 40, 16])
-lnum("obj-11", "semitone", "Tone",  [440, 160, 60, 18],  0, -12.0, 12.0, [214, 60, 40, 16])
+learnbtn("obj-17", "learnLo", "Learn Lo", [ 70, 34, 16, 16])
+lnum("obj-7", "loNote", "Low",    [440, 100, 60, 18], 48, 0.0, 127.0, [ 92, 34, 34, 16])
+note("obj-60", "C2", [128, 34, 30, 16], [0.00, 0.44, 0.30, 1.0])
+ltog("obj-8", "hiOn",   "Hi on",  [400, 130, 24, 24], [200, 34, 15, 15])
+learnbtn("obj-18", "learnHi", "Learn Hi", [222, 34, 16, 16])
+lnum("obj-9", "hiNote", "High",   [440, 130, 60, 18], 72, 0.0, 127.0, [244, 34, 34, 16])
+note("obj-61", "C4", [280, 34, 30, 16], [0.36, 0.14, 0.58, 1.0])
+# Post-transpose row (y~72) : octave (coarse) + tone (fine), applied AFTER the filter
+lnum("obj-10", "octave",  "Octave", [400, 160, 60, 18],  0, -4.0,  4.0, [130, 72, 40, 16])
+lnum("obj-11", "semitone", "Tone",  [440, 160, 60, 18],  0, -12.0, 12.0, [214, 72, 40, 16])
 
 # --- labels (presentation) ---
 lbl("obj-70", "Global",         [10, 11], dim=True)
@@ -77,9 +81,11 @@ lbl("obj-71", "no limits",      [127, 11], dim=True)
 lbl("obj-41", "Mute",           [225, 11])
 lbl("obj-72", "mute track",     [263, 11], dim=True)
 lbl("obj-73", "Limits",         [10, 36], dim=True)
-lbl("obj-74", "Post transpose", [10, 62], dim=True)
-lbl("obj-44", "Oct",            [104, 62])
-lbl("obj-45", "Tone",           [182, 62])
+lbl("obj-46", "learn",          [66, 52], dim=True)
+lbl("obj-47", "learn",          [218, 52], dim=True)
+lbl("obj-74", "Post transpose", [10, 74], dim=True)
+lbl("obj-44", "Oct",            [104, 74])
+lbl("obj-45", "Tone",           [182, 74])
 
 # --- prepends (UI -> js) : source object id -> js message ---
 pre = {"loon": "obj-6", "lo": "obj-7", "hion": "obj-8", "hi": "obj-9", "octaven": "obj-10",
