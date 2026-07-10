@@ -40,7 +40,12 @@ function passes(p)      { return (!loOn || p >= loNote) && (!hiOn || p < hiNote)
 // stays the raw MIDI number in the live.numbox (touching the numbox's parameter unit broke the device).
 var NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 function noteName(n) { n = clamp(n, 0, 127); return NOTE_NAMES[n % 12] + (Math.floor(n / 12) - 2); }
-function names()     { outlet(4, "set", noteName(loNote)); outlet(5, "set", noteName(hiNote)); }
+// try/catch is load-order armour: Max does NOT add js outlets on an autowatch hot-reload (only on
+// full re-instantiation), so right after this feature lands, outlets 4/5 may not exist yet and
+// outlet(4,…) would throw. names() runs inside the note hot path (setBound, before noteOn) — an
+// unguarded throw there silently kills note output. Swallow it: worst case the name label doesn't
+// update until the device is fully reloaded; notes ALWAYS keep flowing.
+function names()     { try { outlet(4, "set", noteName(loNote)); outlet(5, "set", noteName(hiNote)); } catch (e) {} }
 
 // every programmatic send to the kslider raises `echo` so its outlet bounce-back is ignored in kbd()
 function kcol(c)     { echo = 1; outlet(3, "hkeycolor", c[0], c[1], c[2], c[3]); echo = 0; }
