@@ -72,7 +72,7 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 4,
+          "numoutlets": 6,
           "patching_rect": [
             30,
             360,
@@ -81,6 +81,8 @@
           ],
           "text": "js zone.js",
           "outlettype": [
+            "",
+            "",
             "",
             "",
             "",
@@ -270,14 +272,13 @@
             "valueof": {
               "parameter_longname": "loNote",
               "parameter_shortname": "Low",
-              "parameter_type": 0,
+              "parameter_type": 1,
               "parameter_mmin": 0.0,
               "parameter_mmax": 127.0,
               "parameter_initial_enable": 1,
               "parameter_initial": [
                 48
-              ],
-              "parameter_unitstyle": 8
+              ]
             }
           }
         }
@@ -351,16 +352,75 @@
             "valueof": {
               "parameter_longname": "hiNote",
               "parameter_shortname": "High",
-              "parameter_type": 0,
+              "parameter_type": 1,
               "parameter_mmin": 0.0,
               "parameter_mmax": 127.0,
               "parameter_initial_enable": 1,
               "parameter_initial": [
                 72
-              ],
-              "parameter_unitstyle": 8
+              ]
             }
           }
+        }
+      },
+      {
+        "box": {
+          "id": "obj-60",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            520,
+            100,
+            44,
+            18
+          ],
+          "text": "C2",
+          "presentation": 1,
+          "presentation_rect": [
+            235,
+            34,
+            40,
+            15
+          ],
+          "fontsize": 9.0,
+          "textjustification": 1,
+          "textcolor": [
+            0.31,
+            0.78,
+            0.6,
+            1.0
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-61",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            520,
+            130,
+            44,
+            18
+          ],
+          "text": "C4",
+          "presentation": 1,
+          "presentation_rect": [
+            280,
+            34,
+            40,
+            15
+          ],
+          "fontsize": 9.0,
+          "textjustification": 1,
+          "textcolor": [
+            0.55,
+            0.5,
+            0.91,
+            1.0
+          ]
         }
       },
       {
@@ -1564,6 +1624,30 @@
           ],
           "destination": [
             "obj-16",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            4
+          ],
+          "destination": [
+            "obj-60",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            5
+          ],
+          "destination": [
+            "obj-61",
             0
           ]
         }
