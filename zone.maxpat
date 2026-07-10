@@ -223,7 +223,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            60,
+            40,
             34,
             15,
             15
@@ -263,7 +263,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            101,
+            58,
             34,
             34,
             16
@@ -303,7 +303,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            146,
+            190,
             34,
             15,
             15
@@ -343,7 +343,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            193,
+            208,
             34,
             34,
             16
@@ -378,17 +378,17 @@
           "text": "C2",
           "presentation": 1,
           "presentation_rect": [
-            235,
+            94,
             34,
-            40,
-            15
+            32,
+            16
           ],
-          "fontsize": 9.0,
-          "textjustification": 1,
+          "fontsize": 11.0,
+          "textjustification": 0,
           "textcolor": [
-            0.31,
-            0.78,
-            0.6,
+            0.51,
+            0.88,
+            0.73,
             1.0
           ]
         }
@@ -408,17 +408,17 @@
           "text": "C4",
           "presentation": 1,
           "presentation_rect": [
-            280,
+            244,
             34,
-            40,
-            15
+            32,
+            16
           ],
-          "fontsize": 9.0,
-          "textjustification": 1,
+          "fontsize": 11.0,
+          "textjustification": 0,
           "textcolor": [
-            0.55,
-            0.5,
-            0.91,
+            0.73,
+            0.69,
+            0.97,
             1.0
           ]
         }
@@ -799,64 +799,6 @@
             10,
             36,
             38,
-            15
-          ]
-        }
-      },
-      {
-        "box": {
-          "id": "obj-42",
-          "maxclass": "comment",
-          "numinlets": 1,
-          "numoutlets": 0,
-          "patching_rect": [
-            78,
-            336,
-            120,
-            18
-          ],
-          "text": "Low",
-          "fontsize": 10.0,
-          "textcolor": [
-            0.83,
-            0.83,
-            0.83,
-            1.0
-          ],
-          "presentation": 1,
-          "presentation_rect": [
-            78,
-            36,
-            20,
-            15
-          ]
-        }
-      },
-      {
-        "box": {
-          "id": "obj-43",
-          "maxclass": "comment",
-          "numinlets": 1,
-          "numoutlets": 0,
-          "patching_rect": [
-            164,
-            336,
-            120,
-            18
-          ],
-          "text": "High",
-          "fontsize": 10.0,
-          "textcolor": [
-            0.83,
-            0.83,
-            0.83,
-            1.0
-          ],
-          "presentation": 1,
-          "presentation_rect": [
-            164,
-            36,
-            26,
             15
           ]
         }
