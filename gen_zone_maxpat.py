@@ -18,12 +18,18 @@ def box(id, maxclass, text, rect, ins, outs, outtype=None, extra=None):
 def line(s, so, d, di):
     lines.append({"patchline": {"source": [s, so], "destination": [d, di]}})
 
-def lnum(id, var, short, rect, init, mn, mx, pres):
+def lnum(id, var, short, rect, init, mn, mx, pres, unitstyle=None):
+    # unitstyle=8 = "MIDI Note" -> the numbox displays note names (C3, F6…) instead of raw 0-127.
+    # A note is an integer, so switch parameter_type to Int (0) when a note unitstyle is set.
+    valueof = {
+        "parameter_longname": var, "parameter_shortname": short,
+        "parameter_type": 0 if unitstyle is not None else 1,
+        "parameter_mmin": mn, "parameter_mmax": mx, "parameter_initial_enable": 1, "parameter_initial": [init]}
+    if unitstyle is not None:
+        valueof["parameter_unitstyle"] = unitstyle
     box(id, "live.numbox", None, rect, 1, 2, ["", "float"], {
         "varname": var, "parameter_enable": 1, "presentation": 1, "presentation_rect": pres,
-        "saved_attribute_attributes": {"valueof": {
-            "parameter_longname": var, "parameter_shortname": short, "parameter_type": 1,
-            "parameter_mmin": mn, "parameter_mmax": mx, "parameter_initial_enable": 1, "parameter_initial": [init]}}})
+        "saved_attribute_attributes": {"valueof": valueof}})
 
 def ltog(id, var, short, rect, pres):
     box(id, "live.toggle", None, rect, 1, 1, ["", ""], {
@@ -55,9 +61,9 @@ ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60,  9, 15, 15])
 ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206,  9, 15, 15])
 # Limits row (y~34) : Lo + Hi bounds, kept close together
 ltog("obj-6",  "loOn",   "Lo on",  [400,100, 24, 24], [ 60, 34, 15, 15])
-lnum("obj-7",  "loNote", "Low",    [440,100, 60, 18], 48, 0.0,127.0, [101, 34, 34, 16])
+lnum("obj-7",  "loNote", "Low",    [440,100, 60, 18], 48, 0.0,127.0, [101, 34, 34, 16], unitstyle=8)  # show note name (C3…)
 ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [146, 34, 15, 15])
-lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [193, 34, 34, 16])
+lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [193, 34, 34, 16], unitstyle=8)  # show note name (C5…)
 # Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
 lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
@@ -92,8 +98,11 @@ for i,(msg,src) in enumerate(pre.items()):
     oid = "obj-%d" % (20+i)
     pid[msg] = oid
     box(oid, "newobj", "prepend %s" % msg, [400, y+i*26, 110, 22], 1, 1)
-box("obj-31", "newobj", "prepend set", [640, 100, 75, 22], 1, 1)   # Lo feedback
-box("obj-32", "newobj", "prepend set", [640, 140, 75, 22], 1, 1)   # Hi feedback
+# Feedback prepends live at obj-50/51 — clear of BOTH the prepend loop (obj-20..obj-31, so obj-31
+# == "prepend kright") AND the labels (obj-40..45). The original obj-31/32 collided with the loop,
+# leaving the ">" button wired to "prepend set" instead of "prepend kright" (dead scroll).
+box("obj-50", "newobj", "prepend set", [640, 100, 75, 22], 1, 1)   # Lo feedback
+box("obj-51", "newobj", "prepend set", [640, 140, 75, 22], 1, 1)   # Hi feedback
 
 # --- wiring : MIDI ---
 line("obj-1", 0, "obj-2", 0)
@@ -107,8 +116,8 @@ for msg, src in pre.items():
     line(src, 0, pid[msg], 0)
     line(pid[msg], 0, "obj-3", 0)
 # --- feedback : js -> numbox (set = no re-output) ---
-line("obj-3", 1, "obj-31", 0); line("obj-31", 0, "obj-7", 0)
-line("obj-3", 2, "obj-32", 0); line("obj-32", 0, "obj-9", 0)
+line("obj-3", 1, "obj-50", 0); line("obj-50", 0, "obj-7", 0)
+line("obj-3", 2, "obj-51", 0); line("obj-51", 0, "obj-9", 0)
 line("obj-3", 3, "obj-16", 0)   # viz + colour + note display -> kslider
 
 patch = {"patcher": {

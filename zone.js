@@ -27,7 +27,7 @@ var mode = 0;
 var held = {};                       // inPitch -> outPitch
 var shown = -1;                      // key currently lit for the Edit-mode bound
 var echo = 0;                        // 1 while we drive the kslider -> its echo must be ignored by kbd()
-var koff = 36;                       // kslider view offset (lowest displayed note) — 61 keys shown, scroll by octave
+var koff = 30;                       // kslider view offset (lowest displayed note) — 61 keys shown, scroll by octave. 30 -> shows 30..90 = middle C (60) centered by default
 
 var COL = { lo: [0.18, 0.69, 0.53, 1], hi: [0.55, 0.50, 0.91, 1], "in": [0.23, 0.62, 0.88, 1], out: [0.88, 0.64, 0.18, 1] };
 
@@ -68,7 +68,7 @@ function kbd(n) { if (echo) return; if (mode < 2) setBound(n); }   // real click
 // ---- keyboard view scroll (61 visible keys out of 128 ; arrows move one octave) ----
 function kview()  { echo = 1; outlet(3, "offset", koff); echo = 0; }
 function kleft()  { koff = Math.max(0, koff - 12); kview(); }
-function kright() { koff = Math.min(60, koff + 12); kview(); }      // 60 + 61 keys = top of MIDI range
+function kright() { koff = Math.min(67, koff + 12); kview(); }      // 67 + 60 = note 127 -> the top 7 notes (121-127) stay reachable (was 60, which capped the view at 120)
 function loadbang() { kview(); moded(mode); }                       // restore view + mode colour when the device loads
 function moded(v) {
     mode = clamp(v, 0, 3);

@@ -270,13 +270,14 @@
             "valueof": {
               "parameter_longname": "loNote",
               "parameter_shortname": "Low",
-              "parameter_type": 1,
+              "parameter_type": 0,
               "parameter_mmin": 0.0,
               "parameter_mmax": 127.0,
               "parameter_initial_enable": 1,
               "parameter_initial": [
                 48
-              ]
+              ],
+              "parameter_unitstyle": 8
             }
           }
         }
@@ -350,13 +351,14 @@
             "valueof": {
               "parameter_longname": "hiNote",
               "parameter_shortname": "High",
-              "parameter_type": 1,
+              "parameter_type": 0,
               "parameter_mmin": 0.0,
               "parameter_mmax": 127.0,
               "parameter_initial_enable": 1,
               "parameter_initial": [
                 72
-              ]
+              ],
+              "parameter_unitstyle": 8
             }
           }
         }
@@ -1068,7 +1070,7 @@
       },
       {
         "box": {
-          "id": "obj-31",
+          "id": "obj-50",
           "maxclass": "newobj",
           "numinlets": 1,
           "numoutlets": 1,
@@ -1083,7 +1085,7 @@
       },
       {
         "box": {
-          "id": "obj-32",
+          "id": "obj-51",
           "maxclass": "newobj",
           "numinlets": 1,
           "numoutlets": 1,
@@ -1513,7 +1515,7 @@
             1
           ],
           "destination": [
-            "obj-31",
+            "obj-50",
             0
           ]
         }
@@ -1521,7 +1523,7 @@
       {
         "patchline": {
           "source": [
-            "obj-31",
+            "obj-50",
             0
           ],
           "destination": [
@@ -1537,7 +1539,7 @@
             2
           ],
           "destination": [
-            "obj-32",
+            "obj-51",
             0
           ]
         }
@@ -1545,7 +1547,7 @@
       {
         "patchline": {
           "source": [
-            "obj-32",
+            "obj-51",
             0
           ],
           "destination": [
