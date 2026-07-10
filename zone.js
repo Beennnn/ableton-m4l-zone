@@ -19,7 +19,7 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 4;   // 0 = MIDI ; 1 = Low feedback ; 2 = High feedback ; 3 = keyboard (kslider) colour + note display
+outlets = 6;   // 0 = MIDI ; 1 = Low feedback ; 2 = High feedback ; 3 = keyboard (kslider) colour + note display ; 4 = Low note-name ; 5 = High note-name
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
@@ -35,6 +35,13 @@ function clamp(v, a, b) { v = Math.round(v); return v < a ? a : (v > b ? b : v);
 function shift(p)       { return clamp(p + oct * 12 + semi, 0, 127); }
 function passes(p)      { return (!loOn || p >= loNote) && (!hiOn || p < hiNote); }
 
+// Read-only note-name display (outlets 4/5 -> two comment boxes). Ableton Live convention: 60 = C3
+// (octave = floor(n/12) - 2), so 0 = C-2 and 127 = G8. This is display only — the editable value
+// stays the raw MIDI number in the live.numbox (touching the numbox's parameter unit broke the device).
+var NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
+function noteName(n) { n = clamp(n, 0, 127); return NOTE_NAMES[n % 12] + (Math.floor(n / 12) - 2); }
+function names()     { outlet(4, "set", noteName(loNote)); outlet(5, "set", noteName(hiNote)); }
+
 // every programmatic send to the kslider raises `echo` so its outlet bounce-back is ignored in kbd()
 function kcol(c)     { echo = 1; outlet(3, "hkeycolor", c[0], c[1], c[2], c[3]); echo = 0; }
 function knote(n, v) { echo = 1; outlet(3, [n, v]); echo = 0; }
@@ -44,6 +51,7 @@ function showKey(n)  { clearShown(); knote(n, 100); shown = n; }
 function setBound(n) {
     if (mode == 1) { hiNote = clamp(n, 0, 127); outlet(2, hiNote); showKey(hiNote); }
     else if (mode == 0) { loNote = clamp(n, 0, 127); outlet(1, loNote); showKey(loNote); }
+    names();
 }
 function viz(inP, outP, vel) { if (mode == 2) knote(inP, vel); else if (mode == 3) knote(outP, vel); }
 
@@ -69,7 +77,7 @@ function kbd(n) { if (echo) return; if (mode < 2) setBound(n); }   // real click
 function kview()  { echo = 1; outlet(3, "offset", koff); echo = 0; }
 function kleft()  { koff = Math.max(0, koff - 12); kview(); }
 function kright() { koff = Math.min(67, koff + 12); kview(); }      // 67 + 60 = note 127 -> the top 7 notes (121-127) stay reachable (was 60, which capped the view at 120)
-function loadbang() { kview(); moded(mode); }                       // restore view + mode colour when the device loads
+function loadbang() { kview(); moded(mode); names(); }               // restore view + mode colour + note names when the device loads
 function moded(v) {
     mode = clamp(v, 0, 3);
     kcol(mode == 0 ? COL.lo : mode == 1 ? COL.hi : mode == 2 ? COL["in"] : COL.out);   // keyboard highlight -> mode colour
@@ -78,9 +86,9 @@ function moded(v) {
     else if (mode == 1) showKey(hiNote);              // Watch modes : cleared, live notes fill in
 }
 function loon(v)     { loOn = v ? 1 : 0; }
-function lo(v)       { loNote = clamp(v, 0, 127); if (mode == 0) showKey(loNote); }
+function lo(v)       { loNote = clamp(v, 0, 127); if (mode == 0) showKey(loNote); names(); }
 function hion(v)     { hiOn = v ? 1 : 0; }
-function hi(v)       { hiNote = clamp(v, 0, 127); if (mode == 1) showKey(hiNote); }
+function hi(v)       { hiNote = clamp(v, 0, 127); if (mode == 1) showKey(hiNote); names(); }
 function octaven(v)  { oct = clamp(v, -4, 4); }
 function semin(v)    { semi = clamp(v, -12, 12); }    // "Tone" control (semitones)
 function muteon(v)   { muted = v ? 1 : 0; if (muted) allOff(); }

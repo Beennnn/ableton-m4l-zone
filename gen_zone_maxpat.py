@@ -51,7 +51,7 @@ def lbl(id, text, pres, dim=False, w=None):
 # --- MIDI flow (patching view) ---
 box("obj-1", "newobj", "midiin",       [ 30,  30,  45, 22], 1, 1, ["int"])
 box("obj-2", "newobj", "midiparse",    [ 30,  80,  62, 22], 1, 7, ["", "", "", "int", "int", "int", "int"])
-box("obj-3", "newobj", "js zone.js",   [ 30, 360,  90, 22], 1, 4, ["", "", "", ""])
+box("obj-3", "newobj", "js zone.js",   [ 30, 360,  90, 22], 1, 6, ["", "", "", "", "", ""])  # +2 outlets: 4=Low note-name, 5=High note-name
 box("obj-4", "newobj", "midiformat",   [200, 300,  66, 22], 7, 1, ["int"])
 box("obj-5", "newobj", "midiout",      [ 30, 440,  50, 22], 1, 0)
 
@@ -61,9 +61,15 @@ ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60,  9, 15, 15])
 ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206,  9, 15, 15])
 # Limits row (y~34) : Lo + Hi bounds, kept close together
 ltog("obj-6",  "loOn",   "Lo on",  [400,100, 24, 24], [ 60, 34, 15, 15])
-lnum("obj-7",  "loNote", "Low",    [440,100, 60, 18], 48, 0.0,127.0, [101, 34, 34, 16], unitstyle=8)  # show note name (C3…)
+lnum("obj-7",  "loNote", "Low",    [440,100, 60, 18], 48, 0.0,127.0, [101, 34, 34, 16])  # raw MIDI value (editable) ; note name shown read-only by obj-60
 ltog("obj-8",  "hiOn",   "Hi on",  [400,130, 24, 24], [146, 34, 15, 15])
-lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [193, 34, 34, 16], unitstyle=8)  # show note name (C5…)
+lnum("obj-9",  "hiNote", "High",   [440,130, 60, 18], 72, 0.0,127.0, [193, 34, 34, 16])  # raw MIDI value (editable) ; note name shown read-only by obj-61
+# Read-only note-name displays (comment, NOT a Live parameter — driven by zone.js outlets 4/5 via
+# a "set <name>" message). Placed on the right of the limits row; drag them in Max presentation
+# mode to taste. Touching the numbox's own unit style broke device instantiation, so this stays
+# a separate, parameter-free label.
+box("obj-60", "comment", "C2", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [235, 34, 40, 15], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.31, 0.78, 0.60, 1.0]})
+box("obj-61", "comment", "C4", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [280, 34, 40, 15], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.55, 0.50, 0.91, 1.0]})
 # Post-transpose row (y~60) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave", "Octave", [400,160, 60, 18],  0, -4.0, 4.0, [130, 60, 40, 16])
 lnum("obj-11", "semitone","Tone",  [440,160, 60, 18],  0, -12.0,12.0,[214, 60, 40, 16])
@@ -119,6 +125,8 @@ for msg, src in pre.items():
 line("obj-3", 1, "obj-50", 0); line("obj-50", 0, "obj-7", 0)
 line("obj-3", 2, "obj-51", 0); line("obj-51", 0, "obj-9", 0)
 line("obj-3", 3, "obj-16", 0)   # viz + colour + note display -> kslider
+line("obj-3", 4, "obj-60", 0)   # Low note-name  -> comment  (js sends "set <name>")
+line("obj-3", 5, "obj-61", 0)   # High note-name -> comment
 
 patch = {"patcher": {
     "fileversion": 1,
