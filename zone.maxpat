@@ -72,7 +72,7 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 7,
+          "numoutlets": 5,
           "patching_rect": [
             30,
             360,
@@ -81,8 +81,6 @@
           ],
           "text": "js zone.js",
           "outlettype": [
-            "",
-            "",
             "",
             "",
             "",
@@ -224,7 +222,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            40,
+            48,
             34,
             15,
             15
@@ -242,6 +240,34 @@
               "parameter_mmax": 1
             }
           }
+        }
+      },
+      {
+        "box": {
+          "id": "obj-17",
+          "maxclass": "textbutton",
+          "numinlets": 1,
+          "numoutlets": 3,
+          "patching_rect": [
+            640,
+            100,
+            40,
+            20
+          ],
+          "outlettype": [
+            "",
+            "",
+            ""
+          ],
+          "text": "learn",
+          "presentation": 1,
+          "presentation_rect": [
+            66,
+            34,
+            30,
+            16
+          ],
+          "fontsize": 8.0
         }
       },
       {
@@ -264,7 +290,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            58,
+            100,
             34,
             34,
             16
@@ -282,6 +308,36 @@
               ]
             }
           }
+        }
+      },
+      {
+        "box": {
+          "id": "obj-60",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            520,
+            100,
+            44,
+            18
+          ],
+          "text": "C2",
+          "presentation": 1,
+          "presentation_rect": [
+            136,
+            34,
+            30,
+            16
+          ],
+          "fontsize": 11.0,
+          "textjustification": 0,
+          "textcolor": [
+            0.0,
+            0.44,
+            0.3,
+            1.0
+          ]
         }
       },
       {
@@ -304,7 +360,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            190,
+            205,
             34,
             15,
             15
@@ -322,6 +378,34 @@
               "parameter_mmax": 1
             }
           }
+        }
+      },
+      {
+        "box": {
+          "id": "obj-18",
+          "maxclass": "textbutton",
+          "numinlets": 1,
+          "numoutlets": 3,
+          "patching_rect": [
+            640,
+            100,
+            40,
+            20
+          ],
+          "outlettype": [
+            "",
+            "",
+            ""
+          ],
+          "text": "learn",
+          "presentation": 1,
+          "presentation_rect": [
+            223,
+            34,
+            30,
+            16
+          ],
+          "fontsize": 8.0
         }
       },
       {
@@ -344,7 +428,7 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            208,
+            257,
             34,
             34,
             16
@@ -366,7 +450,7 @@
       },
       {
         "box": {
-          "id": "obj-60",
+          "id": "obj-61",
           "maxclass": "comment",
           "numinlets": 1,
           "numoutlets": 0,
@@ -376,42 +460,12 @@
             44,
             18
           ],
-          "text": "C2",
-          "presentation": 1,
-          "presentation_rect": [
-            94,
-            34,
-            32,
-            16
-          ],
-          "fontsize": 11.0,
-          "textjustification": 0,
-          "textcolor": [
-            0.0,
-            0.44,
-            0.3,
-            1.0
-          ]
-        }
-      },
-      {
-        "box": {
-          "id": "obj-61",
-          "maxclass": "comment",
-          "numinlets": 1,
-          "numoutlets": 0,
-          "patching_rect": [
-            520,
-            130,
-            44,
-            18
-          ],
           "text": "C4",
           "presentation": 1,
           "presentation_rect": [
-            244,
+            293,
             34,
-            32,
+            30,
             16
           ],
           "fontsize": 11.0,
@@ -420,36 +474,6 @@
             0.36,
             0.14,
             0.58,
-            1.0
-          ]
-        }
-      },
-      {
-        "box": {
-          "id": "obj-62",
-          "maxclass": "comment",
-          "numinlets": 1,
-          "numoutlets": 0,
-          "patching_rect": [
-            520,
-            160,
-            70,
-            18
-          ],
-          "text": "F#0-F#5",
-          "presentation": 1,
-          "presentation_rect": [
-            346,
-            99,
-            90,
-            13
-          ],
-          "fontsize": 9.0,
-          "textjustification": 2,
-          "textcolor": [
-            0.0,
-            0.0,
-            0.0,
             1.0
           ]
         }
@@ -532,132 +556,6 @@
               ]
             }
           }
-        }
-      },
-      {
-        "box": {
-          "id": "obj-14",
-          "maxclass": "live.tab",
-          "numinlets": 1,
-          "numoutlets": 3,
-          "patching_rect": [
-            400,
-            190,
-            210,
-            20
-          ],
-          "outlettype": [
-            "",
-            "",
-            ""
-          ],
-          "varname": "mode",
-          "parameter_enable": 1,
-          "presentation": 1,
-          "presentation_rect": [
-            10,
-            88,
-            300,
-            18
-          ],
-          "saved_attribute_attributes": {
-            "valueof": {
-              "parameter_longname": "mode",
-              "parameter_shortname": "Mode",
-              "parameter_type": 2,
-              "parameter_enum": [
-                "Edit Low",
-                "Edit High",
-                "Watch In",
-                "Watch Out"
-              ],
-              "parameter_mmin": 0,
-              "parameter_mmax": 3
-            }
-          }
-        }
-      },
-      {
-        "box": {
-          "id": "obj-16",
-          "maxclass": "kslider",
-          "numinlets": 1,
-          "numoutlets": 2,
-          "patching_rect": [
-            400,
-            230,
-            340,
-            56
-          ],
-          "outlettype": [
-            "int",
-            "int"
-          ],
-          "presentation": 1,
-          "presentation_rect": [
-            26,
-            112,
-            408,
-            38
-          ],
-          "offset": 36,
-          "range": 61
-        }
-      },
-      {
-        "box": {
-          "id": "obj-17",
-          "maxclass": "textbutton",
-          "numinlets": 1,
-          "numoutlets": 3,
-          "patching_rect": [
-            640,
-            230,
-            20,
-            20
-          ],
-          "outlettype": [
-            "",
-            "",
-            ""
-          ],
-          "text": "<",
-          "presentation": 1,
-          "presentation_rect": [
-            10,
-            112,
-            14,
-            38
-          ],
-          "fontsize": 9.0
-        }
-      },
-      {
-        "box": {
-          "id": "obj-18",
-          "maxclass": "textbutton",
-          "numinlets": 1,
-          "numoutlets": 3,
-          "patching_rect": [
-            670,
-            230,
-            20,
-            20
-          ],
-          "outlettype": [
-            "",
-            "",
-            ""
-          ],
-          "text": ">",
-          "presentation": 1,
-          "presentation_rect": [
-            436,
-            112,
-            14,
-            38
-          ],
-          "fontsize": 9.0
         }
       },
       {
@@ -1053,7 +951,7 @@
             110,
             22
           ],
-          "text": "prepend moded"
+          "text": "prepend learnlo"
         }
       },
       {
@@ -1068,37 +966,7 @@
             110,
             22
           ],
-          "text": "prepend kbd"
-        }
-      },
-      {
-        "box": {
-          "id": "obj-30",
-          "maxclass": "newobj",
-          "numinlets": 1,
-          "numoutlets": 1,
-          "patching_rect": [
-            400,
-            430,
-            110,
-            22
-          ],
-          "text": "prepend kleft"
-        }
-      },
-      {
-        "box": {
-          "id": "obj-31",
-          "maxclass": "newobj",
-          "numinlets": 1,
-          "numoutlets": 1,
-          "patching_rect": [
-            400,
-            456,
-            110,
-            22
-          ],
-          "text": "prepend kright"
+          "text": "prepend learnhi"
         }
       },
       {
@@ -1109,7 +977,7 @@
           "numoutlets": 1,
           "patching_rect": [
             640,
-            100,
+            300,
             75,
             22
           ],
@@ -1124,7 +992,7 @@
           "numoutlets": 1,
           "patching_rect": [
             640,
-            140,
+            340,
             75,
             22
           ],
@@ -1448,59 +1316,11 @@
       {
         "patchline": {
           "source": [
-            "obj-14",
-            0
-          ],
-          "destination": [
-            "obj-28",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
-            "obj-28",
-            0
-          ],
-          "destination": [
-            "obj-3",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
-            "obj-16",
-            0
-          ],
-          "destination": [
-            "obj-29",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
-            "obj-29",
-            0
-          ],
-          "destination": [
-            "obj-3",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
             "obj-17",
             0
           ],
           "destination": [
-            "obj-30",
+            "obj-28",
             0
           ]
         }
@@ -1508,7 +1328,7 @@
       {
         "patchline": {
           "source": [
-            "obj-30",
+            "obj-28",
             0
           ],
           "destination": [
@@ -1524,7 +1344,7 @@
             0
           ],
           "destination": [
-            "obj-31",
+            "obj-29",
             0
           ]
         }
@@ -1532,7 +1352,7 @@
       {
         "patchline": {
           "source": [
-            "obj-31",
+            "obj-29",
             0
           ],
           "destination": [
@@ -1596,7 +1416,7 @@
             3
           ],
           "destination": [
-            "obj-16",
+            "obj-60",
             0
           ]
         }
@@ -1608,31 +1428,7 @@
             4
           ],
           "destination": [
-            "obj-60",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
-            "obj-3",
-            5
-          ],
-          "destination": [
             "obj-61",
-            0
-          ]
-        }
-      },
-      {
-        "patchline": {
-          "source": [
-            "obj-3",
-            6
-          ],
-          "destination": [
-            "obj-62",
             0
           ]
         }
