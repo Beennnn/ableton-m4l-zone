@@ -145,7 +145,7 @@
           "presentation": 1,
           "presentation_rect": [
             60,
-            9,
+            10,
             15,
             15
           ],
@@ -185,7 +185,7 @@
           "presentation": 1,
           "presentation_rect": [
             206,
-            9,
+            10,
             15,
             15
           ],
@@ -224,8 +224,8 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            48,
-            34,
+            40,
+            50,
             15,
             15
           ],
@@ -241,7 +241,13 @@
               "parameter_mmin": 0,
               "parameter_mmax": 1
             }
-          }
+          },
+          "activecolor": [
+            0.0,
+            0.69,
+            0.53,
+            1.0
+          ]
         }
       },
       {
@@ -263,10 +269,10 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            70,
-            34,
-            16,
-            16
+            62,
+            50,
+            15,
+            15
           ],
           "saved_attribute_attributes": {
             "valueof": {
@@ -296,8 +302,8 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            92,
-            34,
+            118,
+            50,
             34,
             16
           ],
@@ -331,8 +337,8 @@
           "text": "C2",
           "presentation": 1,
           "presentation_rect": [
-            128,
-            34,
+            156,
+            50,
             30,
             16
           ],
@@ -366,8 +372,8 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            200,
-            34,
+            40,
+            72,
             15,
             15
           ],
@@ -383,7 +389,13 @@
               "parameter_mmin": 0,
               "parameter_mmax": 1
             }
-          }
+          },
+          "activecolor": [
+            0.55,
+            0.5,
+            0.91,
+            1.0
+          ]
         }
       },
       {
@@ -405,10 +417,10 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            222,
-            34,
-            16,
-            16
+            62,
+            72,
+            15,
+            15
           ],
           "saved_attribute_attributes": {
             "valueof": {
@@ -438,8 +450,8 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            244,
-            34,
+            118,
+            72,
             34,
             16
           ],
@@ -473,8 +485,8 @@
           "text": "C4",
           "presentation": 1,
           "presentation_rect": [
-            280,
-            34,
+            156,
+            72,
             30,
             16
           ],
@@ -508,8 +520,8 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            130,
-            72,
+            116,
+            96,
             40,
             16
           ],
@@ -548,8 +560,8 @@
           "parameter_enable": 1,
           "presentation": 1,
           "presentation_rect": [
-            214,
-            72,
+            196,
+            96,
             40,
             16
           ],
@@ -744,20 +756,78 @@
       },
       {
         "box": {
-          "id": "obj-46",
+          "id": "obj-48",
           "maxclass": "comment",
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
             520,
             100,
+            40,
+            18
+          ],
+          "text": "Low",
+          "presentation": 1,
+          "presentation_rect": [
+            10,
+            51,
+            26,
+            13
+          ],
+          "fontsize": 9.0,
+          "textcolor": [
+            0.0,
+            0.44,
+            0.3,
+            1.0
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-49",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            520,
+            130,
+            40,
+            18
+          ],
+          "text": "High",
+          "presentation": 1,
+          "presentation_rect": [
+            10,
+            73,
+            26,
+            13
+          ],
+          "fontsize": 9.0,
+          "textcolor": [
+            0.36,
+            0.14,
+            0.58,
+            1.0
+          ]
+        }
+      },
+      {
+        "box": {
+          "id": "obj-46",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            520,
+            160,
             44,
             18
           ],
           "text": "learn",
           "presentation": 1,
           "presentation_rect": [
-            64,
+            82,
             51,
             32,
             13
@@ -780,15 +850,15 @@
           "numoutlets": 0,
           "patching_rect": [
             520,
-            130,
+            190,
             44,
             18
           ],
           "text": "learn",
           "presentation": 1,
           "presentation_rect": [
-            216,
-            51,
+            82,
+            73,
             32,
             13
           ],
@@ -810,7 +880,7 @@
           "numoutlets": 0,
           "patching_rect": [
             10,
-            374,
+            397,
             120,
             18
           ],
@@ -825,7 +895,7 @@
           "presentation": 1,
           "presentation_rect": [
             10,
-            74,
+            97,
             86,
             15
           ]
@@ -838,8 +908,8 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            104,
-            374,
+            96,
+            398,
             120,
             18
           ],
@@ -853,8 +923,8 @@
           ],
           "presentation": 1,
           "presentation_rect": [
-            104,
-            74,
+            96,
+            98,
             20,
             15
           ]
@@ -867,8 +937,8 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            182,
-            374,
+            172,
+            398,
             120,
             18
           ],
@@ -882,8 +952,8 @@
           ],
           "presentation": 1,
           "presentation_rect": [
-            182,
-            74,
+            172,
+            98,
             26,
             15
           ]

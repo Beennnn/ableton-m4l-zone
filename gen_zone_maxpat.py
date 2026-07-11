@@ -26,12 +26,13 @@ def lnum(id, var, short, rect, init, mn, mx, pres):
             "parameter_longname": var, "parameter_shortname": short, "parameter_type": 1,
             "parameter_mmin": mn, "parameter_mmax": mx, "parameter_initial_enable": 1, "parameter_initial": [init]}}})
 
-def ltog(id, var, short, rect, pres):
-    box(id, "live.toggle", None, rect, 1, 1, ["", ""], {
-        "varname": var, "parameter_enable": 1, "presentation": 1, "presentation_rect": pres,
-        "saved_attribute_attributes": {"valueof": {
-            "parameter_longname": var, "parameter_shortname": short, "parameter_type": 2,
-            "parameter_enum": ["off", "on"], "parameter_mmin": 0, "parameter_mmax": 1}}})
+def ltog(id, var, short, rect, pres, color=None):
+    extra = {"varname": var, "parameter_enable": 1, "presentation": 1, "presentation_rect": pres,
+             "saved_attribute_attributes": {"valueof": {
+                 "parameter_longname": var, "parameter_shortname": short, "parameter_type": 2,
+                 "parameter_enum": ["off", "on"], "parameter_mmin": 0, "parameter_mmax": 1}}}
+    if color: extra["activecolor"] = color   # "on" colour (teal for Low, violet for High)
+    box(id, "live.toggle", None, rect, 1, 1, ["", ""], extra)
 
 def learnbtn(id, var, short, pres):   # live.button — the reliable momentary button in M4L.
     # (Plain textbutton does NOT fire clicks through in this device — that was the dead ">"/learn
@@ -58,21 +59,25 @@ box("obj-4", "newobj", "midiformat", [200, 300,  66, 22], 7, 1, ["int"])
 box("obj-5", "newobj", "midiout",    [ 30, 440,  50, 22], 1, 0)
 
 # --- UI controls (mappable) + presentation rects ---
-# Global row (y~9) : Bypass = let everything through raw ; Mute = block all output
-ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60,  9, 15, 15])
-ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206,  9, 15, 15])
-# Limits row (y~34) : per side -> [on toggle][learn live.button][MIDI value][note name]
-ltog("obj-6", "loOn",   "Lo on",  [400, 100, 24, 24], [ 48, 34, 15, 15])
-learnbtn("obj-17", "learnLo", "Learn Lo", [ 70, 34, 16, 16])
-lnum("obj-7", "loNote", "Low",    [440, 100, 60, 18], 48, 0.0, 127.0, [ 92, 34, 34, 16])
-note("obj-60", "C2", [128, 34, 30, 16], [0.00, 0.44, 0.30, 1.0])
-ltog("obj-8", "hiOn",   "Hi on",  [400, 130, 24, 24], [200, 34, 15, 15])
-learnbtn("obj-18", "learnHi", "Learn Hi", [222, 34, 16, 16])
-lnum("obj-9", "hiNote", "High",   [440, 130, 60, 18], 72, 0.0, 127.0, [244, 34, 34, 16])
-note("obj-61", "C4", [280, 34, 30, 16], [0.36, 0.14, 0.58, 1.0])
-# Post-transpose row (y~72) : octave (coarse) + tone (fine), applied AFTER the filter
-lnum("obj-10", "octave",  "Octave", [400, 160, 60, 18],  0, -4.0,  4.0, [130, 72, 40, 16])
-lnum("obj-11", "semitone", "Tone",  [440, 160, 60, 18],  0, -12.0, 12.0, [214, 72, 40, 16])
+TEAL   = [0.0, 0.69, 0.53, 1.0]    # Low  accent (toggle "on" colour)
+VIOLET = [0.55, 0.50, 0.91, 1.0]   # High accent
+TEAL_T   = [0.0, 0.44, 0.30, 1.0]  # readable dark text on the grey device
+VIOLET_T = [0.36, 0.14, 0.58, 1.0]
+# Global row (y~10) : Bypass = let everything through raw ; Mute = block all output
+ltog("obj-13", "bypass", "Bypass", [400, 40, 24, 24], [ 60, 10, 15, 15])
+ltog("obj-12", "mute",   "Mute",   [400, 70, 24, 24], [206, 10, 15, 15])
+# Limits — Low on its own row (y~50), High below (y~72). Each: [on][learn][state][value][note].
+ltog("obj-6", "loOn", "Lo on", [400, 100, 24, 24], [40, 50, 15, 15], color=TEAL)
+learnbtn("obj-17", "learnLo", "Learn Lo", [62, 50, 15, 15])
+lnum("obj-7", "loNote", "Low", [440, 100, 60, 18], 48, 0.0, 127.0, [118, 50, 34, 16])
+note("obj-60", "C2", [156, 50, 30, 16], TEAL_T)
+ltog("obj-8", "hiOn", "Hi on", [400, 130, 24, 24], [40, 72, 15, 15], color=VIOLET)
+learnbtn("obj-18", "learnHi", "Learn Hi", [62, 72, 15, 15])
+lnum("obj-9", "hiNote", "High", [440, 130, 60, 18], 72, 0.0, 127.0, [118, 72, 34, 16])
+note("obj-61", "C4", [156, 72, 30, 16], VIOLET_T)
+# Transpose row (y~96) : octave (coarse) + tone (fine), applied AFTER the filter
+lnum("obj-10", "octave",  "Octave", [400, 160, 60, 18],  0, -4.0,  4.0, [116, 96, 40, 16])
+lnum("obj-11", "semitone", "Tone",  [440, 160, 60, 18],  0, -12.0, 12.0, [196, 96, 40, 16])
 
 # --- labels (presentation) ---
 lbl("obj-70", "Global",         [10, 11], dim=True)
@@ -81,13 +86,16 @@ lbl("obj-71", "no limits",      [127, 11], dim=True)
 lbl("obj-41", "Mute",           [225, 11])
 lbl("obj-72", "mute track",     [263, 11], dim=True)
 lbl("obj-73", "Limits",         [10, 36], dim=True)
-# Learn-state labels under each button — driven by zone.js outlets 5/6: "learn" idle, "play" while
-# armed (prompt + armed indicator). Coloured to the limit (teal=low, violet=high).
-box("obj-46", "comment", "learn", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [64, 51, 32, 13], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.00, 0.44, 0.30, 1.0]})
-box("obj-47", "comment", "learn", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [216, 51, 32, 13], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.36, 0.14, 0.58, 1.0]})
-lbl("obj-74", "Post transpose", [10, 74], dim=True)
-lbl("obj-44", "Oct",            [104, 74])
-lbl("obj-45", "Tone",           [182, 74])
+# Per-limit row labels (coloured) — one row for Low (y50), one for High (y72).
+box("obj-48", "comment", "Low",  [520, 100, 40, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [10, 51, 26, 13], "fontsize": 9.0, "textcolor": [0.00, 0.44, 0.30, 1.0]})
+box("obj-49", "comment", "High", [520, 130, 40, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [10, 73, 26, 13], "fontsize": 9.0, "textcolor": [0.36, 0.14, 0.58, 1.0]})
+# Learn-state labels right of each learn button — driven by zone.js outlets 5/6: "learn" idle,
+# "play" while armed (prompt + armed indicator).
+box("obj-46", "comment", "learn", [520, 160, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [82, 51, 32, 13], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.00, 0.44, 0.30, 1.0]})
+box("obj-47", "comment", "learn", [520, 190, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [82, 73, 32, 13], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.36, 0.14, 0.58, 1.0]})
+lbl("obj-74", "Post transpose", [10, 97], dim=True)
+lbl("obj-44", "Oct",            [96, 98])
+lbl("obj-45", "Tone",           [172, 98])
 
 # --- prepends (UI -> js) : source object id -> js message ---
 pre = {"loon": "obj-6", "lo": "obj-7", "hion": "obj-8", "hi": "obj-9", "octaven": "obj-10",
