@@ -1,6 +1,6 @@
 # Zone — keyboard split / zone filter for Ableton Live
 
-![Zone — Max for Live MIDI device](zone-banner.png)
+![Zone — Max for Live MIDI device](zone-device.png)
 
 One tiny **Max for Live MIDI effect** per instrument: it plays only the keys you give it.
 Set a low and a high bound, shift the result by octaves or semitones, and build
