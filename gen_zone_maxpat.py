@@ -53,7 +53,7 @@ def lbl(id, text, pres, dim=False, w=None):
 # --- MIDI flow (patching view) ---
 box("obj-1", "newobj", "midiin",     [ 30,  30,  45, 22], 1, 1, ["int"])
 box("obj-2", "newobj", "midiparse",  [ 30,  80,  62, 22], 1, 7, ["", "", "", "int", "int", "int", "int"])
-box("obj-3", "newobj", "js zone.js", [ 30, 360,  90, 22], 1, 5, ["", "", "", "", ""])  # 0 MIDI, 1 Low fb, 2 High fb, 3 Low name, 4 High name
+box("obj-3", "newobj", "js zone.js", [ 30, 360,  90, 22], 1, 7, ["", "", "", "", "", "", ""])  # 0 MIDI, 1/2 Low/High fb, 3/4 note names, 5/6 Low/High learn-state
 box("obj-4", "newobj", "midiformat", [200, 300,  66, 22], 7, 1, ["int"])
 box("obj-5", "newobj", "midiout",    [ 30, 440,  50, 22], 1, 0)
 
@@ -81,8 +81,10 @@ lbl("obj-71", "no limits",      [127, 11], dim=True)
 lbl("obj-41", "Mute",           [225, 11])
 lbl("obj-72", "mute track",     [263, 11], dim=True)
 lbl("obj-73", "Limits",         [10, 36], dim=True)
-lbl("obj-46", "learn",          [66, 52], dim=True)
-lbl("obj-47", "learn",          [218, 52], dim=True)
+# Learn-state labels under each button — driven by zone.js outlets 5/6: "learn" idle, "play" while
+# armed (prompt + armed indicator). Coloured to the limit (teal=low, violet=high).
+box("obj-46", "comment", "learn", [520, 100, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [64, 51, 32, 13], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.00, 0.44, 0.30, 1.0]})
+box("obj-47", "comment", "learn", [520, 130, 44, 18], 1, 0, None, {"presentation": 1, "presentation_rect": [216, 51, 32, 13], "fontsize": 9.0, "textjustification": 1, "textcolor": [0.36, 0.14, 0.58, 1.0]})
 lbl("obj-74", "Post transpose", [10, 74], dim=True)
 lbl("obj-44", "Oct",            [104, 74])
 lbl("obj-45", "Tone",           [182, 74])
@@ -117,6 +119,9 @@ line("obj-3", 2, "obj-51", 0); line("obj-51", 0, "obj-9", 0)
 # --- note-name displays ---
 line("obj-3", 3, "obj-60", 0)   # Low note-name  -> comment ("set <name>")
 line("obj-3", 4, "obj-61", 0)   # High note-name -> comment
+# --- learn-state labels (learn / play) ---
+line("obj-3", 5, "obj-46", 0)   # Low learn-state  -> label
+line("obj-3", 6, "obj-47", 0)   # High learn-state -> label
 
 patch = {"patcher": {
     "fileversion": 1,

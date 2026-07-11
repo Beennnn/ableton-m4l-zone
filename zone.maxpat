@@ -72,7 +72,7 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 5,
+          "numoutlets": 7,
           "patching_rect": [
             30,
             360,
@@ -81,6 +81,8 @@
           ],
           "text": "js zone.js",
           "outlettype": [
+            "",
+            "",
             "",
             "",
             "",
@@ -747,25 +749,26 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            66,
-            352,
-            120,
+            520,
+            100,
+            44,
             18
           ],
           "text": "learn",
-          "fontsize": 10.0,
-          "textcolor": [
-            0.55,
-            0.55,
-            0.55,
-            1.0
-          ],
           "presentation": 1,
           "presentation_rect": [
-            66,
-            52,
+            64,
+            51,
             32,
-            15
+            13
+          ],
+          "fontsize": 9.0,
+          "textjustification": 1,
+          "textcolor": [
+            0.0,
+            0.44,
+            0.3,
+            1.0
           ]
         }
       },
@@ -776,25 +779,26 @@
           "numinlets": 1,
           "numoutlets": 0,
           "patching_rect": [
-            218,
-            352,
-            120,
+            520,
+            130,
+            44,
             18
           ],
           "text": "learn",
-          "fontsize": 10.0,
-          "textcolor": [
-            0.55,
-            0.55,
-            0.55,
-            1.0
-          ],
           "presentation": 1,
           "presentation_rect": [
-            218,
-            52,
+            216,
+            51,
             32,
-            15
+            13
+          ],
+          "fontsize": 9.0,
+          "textjustification": 1,
+          "textcolor": [
+            0.36,
+            0.14,
+            0.58,
+            1.0
           ]
         }
       },
@@ -1495,6 +1499,30 @@
           ],
           "destination": [
             "obj-61",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            5
+          ],
+          "destination": [
+            "obj-46",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            6
+          ],
+          "destination": [
+            "obj-47",
             0
           ]
         }

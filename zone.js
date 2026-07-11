@@ -9,7 +9,7 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 5;   // 0 = MIDI out ; 1 = Low feedback (numbox) ; 2 = High feedback (numbox) ; 3 = Low note-name ; 4 = High note-name
+outlets = 7;   // 0 = MIDI out ; 1 = Low feedback ; 2 = High feedback ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
@@ -29,13 +29,16 @@ function noteName(n) { n = clamp(n, 0, 127); return NOTE_NAMES[n % 12] + (Math.f
 function names()     { try { outlet(3, "set", noteName(loNote)); outlet(4, "set", noteName(hiNote)); } catch (e) {} }
 
 // Learn buttons: click to arm, then play a note to set that bound (= MIDI learn for the limit).
-function learnlo() { loLearn = 1; }
-function learnhi() { hiLearn = 1; }
+// arm() drives the label under each button: "play" while armed (prompt + armed indicator), "learn"
+// idle. It flips back to "learn" the instant the note is captured, so you always see the state.
+function arm()     { try { outlet(5, "set", loLearn ? "play" : "learn"); outlet(6, "set", hiLearn ? "play" : "learn"); } catch (e) {} }
+function learnlo() { loLearn = 1; arm(); }
+function learnhi() { hiLearn = 1; arm(); }
 
 function list(pitch, velocity) {
     if (velocity > 0) {
-        if (loLearn) { loNote = clamp(pitch, 0, 127); loLearn = 0; outlet(1, loNote); names(); }
-        if (hiLearn) { hiNote = clamp(pitch, 0, 127); hiLearn = 0; outlet(2, hiNote); names(); }
+        if (loLearn) { loNote = clamp(pitch, 0, 127); loLearn = 0; outlet(1, loNote); names(); arm(); }
+        if (hiLearn) { hiNote = clamp(pitch, 0, 127); hiLearn = 0; outlet(2, hiNote); names(); arm(); }
     }
     if (velocity > 0) noteOn(pitch, velocity);
     else              noteOff(pitch);
@@ -51,7 +54,7 @@ function noteOff(p) {
 }
 function allOff() { for (var p in held) noteOff(Number(p)); }
 
-function loadbang() { names(); }                      // restore note-name labels when the device loads
+function loadbang() { names(); arm(); }               // restore note-name labels + learn labels when the device loads
 function loon(v)     { loOn = v ? 1 : 0; }
 function lo(v)       { loNote = clamp(v, 0, 127); names(); }
 function hion(v)     { hiOn = v ? 1 : 0; }
