@@ -473,7 +473,7 @@
                 "off",
                 "on"
               ],
-              "parameter_longname": "learnLo[1]",
+              "parameter_longname": "learnLo",
               "parameter_mmax": 1,
               "parameter_modmode": 0,
               "parameter_shortname": "Learn Lo",
@@ -593,7 +593,7 @@
                 "off",
                 "on"
               ],
-              "parameter_longname": "learnLo",
+              "parameter_longname": "hiOn",
               "parameter_mmax": 1,
               "parameter_modmode": 0,
               "parameter_shortname": "Hi on",
@@ -632,7 +632,7 @@
                 "off",
                 "on"
               ],
-              "parameter_longname": "learnHi[1]",
+              "parameter_longname": "learnHi",
               "parameter_mmax": 1,
               "parameter_modmode": 0,
               "parameter_shortname": "Learn Hi",
@@ -672,7 +672,7 @@
                 127
               ],
               "parameter_initial_enable": 1,
-              "parameter_longname": "hiOn",
+              "parameter_longname": "hiNote",
               "parameter_modmode": 0,
               "parameter_shortname": "High",
               "parameter_type": 1,
@@ -753,7 +753,7 @@
                 0
               ],
               "parameter_initial_enable": 1,
-              "parameter_longname": "hiNote",
+              "parameter_longname": "octave",
               "parameter_mmax": 4.0,
               "parameter_mmin": -4.0,
               "parameter_modmode": 0,
@@ -795,7 +795,7 @@
                 0
               ],
               "parameter_initial_enable": 1,
-              "parameter_longname": "learnHi",
+              "parameter_longname": "semitone",
               "parameter_mmax": 5.0,
               "parameter_mmin": -6.0,
               "parameter_modmode": 0,
