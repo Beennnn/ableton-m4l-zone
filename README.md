@@ -88,12 +88,6 @@ the instances stay independent, the *sync* lives in the rack:
 | **Layer** (two sounds together) | both chains full range (or both bypassed) |
 | **Split + layer** | any mix — stack as many Zones as you like |
 
-**→ [`rack/`](rack/) ships a ready-made "Zone Keyboard" rack** (`.adg` + demo Live set):
-Basse + Piano chains with `Split Point`, `Full Bass`, `Full Piano` and `Split` (turn it
-down for layer mode) macros, ready to fill with your own instruments.
-
-[![Zone Keyboard rack](rack/zone-keyboard-set.png)](rack/)
-
 ## Try it in the browser
 
 **[Interactive demo](https://claude.ai/code/artifact/1a33057b-34ec-4ba8-b8df-364b2746d822)**
