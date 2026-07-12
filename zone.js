@@ -15,12 +15,13 @@ var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
 var loLearn = 0, hiLearn = 0;        // armed by the Learn buttons ; the next played note sets that bound
 var held = {};                       // inPitch -> outPitch
-// Tone-via-CC : a parameterizable control CC drives the Tone (semitone) value. CC number + channel
-// are set from the UI (defaults CC 102 / ch 1 — 102-119 is the MIDI "Undefined" range, collision-free).
+// Tone-via-CC : a control CC drives the Tone (semitone) value. The CC number is set from the UI
+// (default 102 — 102-119 is the MIDI "Undefined" range, collision-free). Channel is NOT filtered here:
+// Ableton's track input is the natural channel gate, so we act on the CC on whatever channel reaches us.
 // The CC *value* uses a dead-zone window: 58..69 -> -6..+5 (value = 64 + semitones), saturating outside,
 // so "value 64 + n = Tone n" with no math and no rounding. A matching CC is CONSUMED (not passed
 // downstream) ; every other CC passes through untouched.
-var ctlNum = 102, ctlChan = 1, curChan = 1;
+var ctlNum = 102, curChan = 1;   // curChan is latched only to re-emit passthrough CCs on their own channel
 var center64 = 1, rangeStep = 1, ccOn = 1;   // Mode: center64 (1=CC64->0 / 0=CC0->0) ; rangeStep (1=1CC<->1semi / 0=interpolate) ; ccOn = master enable
 
 function clamp(v, a, b) { v = Math.round(v); return v < a ? a : (v > b ? b : v); }
@@ -74,7 +75,6 @@ function panic()     { allOff(); }
 
 // --- Tone via CC (parameterizable CC number + channel + mode, no hardcoding) ---
 function ctlnum(v)    { ctlNum  = clamp(v, 0, 127); }   // which CC number drives Tone
-function ctlchan(v)   { ctlChan = clamp(v, 1, 16); }    // on which MIDI channel
 function ctlcenter(v) { center64 = v ? 1 : 0; }         // 1 = center on CC 64 (window) ; 0 = center on CC 0 (wrap)
 function ctlrange(v)  { rangeStep = v ? 1 : 0; }        // 1 = Step (1 CC = 1 semitone) ; 0 = All range (interpolate)
 function ccon(v)      { ccOn = v ? 1 : 0; }             // master enable : off = the control CC just passes through, untouched
@@ -91,7 +91,7 @@ function toneFromCC(v) {
                     : (((i + 6) % 12) - 6);            // Center 0  : 0,+1,..,+5,-6,..,-1  (0 first, reaches -1)
 }
 function ctl(controller, value) {
-    if (ccOn && controller == ctlNum && curChan == ctlChan) {
+    if (ccOn && controller == ctlNum) {
         try { outlet(7, toneFromCC(value)); } catch (e) {}  // drives the Tone numbox (-> semin, moves the param)
         return;                                             // consume : the control CC does not pass on
     }

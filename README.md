@@ -56,8 +56,7 @@ Lets an external CC (a fader, a clip envelope, a script) move the Tone value. Ha
 | Field | Default | Impact |
 |---|---|---|
 | **CC on** | on | Master enable. On = the watched CC drives Tone and is **consumed** (never reaches the instrument downstream). Off = that CC passes through untouched, Tone unaffected (feature disabled). |
-| **CC#** | 102 | Which CC number is watched. **102–119** is the MIDI "Undefined" range → no collision with mod-wheel (1), expression (11), sustain (64), cutoff (74)… |
-| **Ch** | 1 | Which MIDI channel the CC must arrive on. |
+| **CC#** | 102 | Which CC number is watched, on **any channel** that reaches the track. **102–119** is the MIDI "Undefined" range → no collision with mod-wheel (1), expression (11), sustain (64), cutoff (74)… (Channel is filtered by Ableton's track input, so there's no channel field here.) |
 | **Center** | 64 | Where Tone 0 sits in the CC **value**. `64` = value 64 → Tone 0 (a window around 64). `0` = value 0 → Tone 0 (wraps, so you can reach the negatives even though a CC value never goes below 0). |
 | **Range** | Step | `Step` = 1 CC value = 1 semitone (a 12-value window; the rest saturates or wraps). `All` = the whole 0–127 sweep is interpolated across the 12 semitones. |
 
