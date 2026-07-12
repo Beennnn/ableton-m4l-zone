@@ -2,10 +2,19 @@
 
 ![Zone — Max for Live MIDI device](zone-device.png)
 
-One tiny **Max for Live MIDI effect** per instrument: it plays only the keys you give it.
-Set a low and a high bound, shift the result by octaves or semitones, drive that shift from
-a MIDI CC if you like, and build hardware-style **splits and layers** — one rack macro can
-move a split point across several instruments at once.
+One tiny **Max for Live MIDI effect** per instrument: it plays only the keys you give it,
+then transposes the result. Two things make it worth it:
+
+- **Transpose *after* the split — the split point never moves with it.** The zone is filtered
+  on the notes you actually play; the octave/semitone shift hits only the survivors,
+  **downstream**. So you can transpose the sound as much as you like and the split boundary
+  stays exactly where you set it — it never transposes itself. Define the split once, shift the
+  sound freely on top.
+- **Mappable min/max bounds — which Ableton can't do natively.** `Low` and `High` are real Live
+  parameters, so the split point is **MIDI-mappable and automatable** (Ableton's built-in key
+  zones are not). Map several Zones' bounds to one CC and move a split across instruments, live.
+
+Stack instances to build **splits and layers**.
 
 ## Get it
 
@@ -17,7 +26,8 @@ move a split point across several instruments at once.
 ## Manual — every field and what it does
 
 The device is a few rows of controls (no on-screen keyboard). Every control is a Live
-parameter, so it's **automatable, MIDI-mappable and rack-macro-mappable**.
+parameter, so it's **automatable and MIDI-mappable** — including the `Low`/`High` split bounds,
+which Ableton's native key zones don't let you map.
 
 ### Global
 
@@ -70,8 +80,9 @@ Lets an external CC (a fader, a clip envelope, a script) move the Tone value. Ha
 Default **64 + Step** = the window: value **68 → +4**, 64 → 0, 58 → −6, 69 → +5, outside saturates.
 
 > **Drive it from a Stream Deck.** The [Trevliga Spel Stream Deck MIDI plugin](https://trevligaspel.se/streamdeck/midi/index.php)
-> fires MIDI (CC, **Program Change**, Note…) straight from physical Stream Deck keys — assign a key to send
-> `CC 102` at a fixed value and you get one-press Tone recalls, or drive any of Zone's parameters hands-on.
+> is an absolute gem — it fires MIDI (CC, **Program Change**, Note…) straight from physical Stream Deck keys.
+> Assign a key to send `CC 102` at a fixed value and you get one-press Tone recalls, or drive any of Zone's
+> parameters hands-on. Honestly a killer companion for this device.
 
 ### Passthrough
 
@@ -80,16 +91,17 @@ aftertouch, program change, and **any CC except the one watched by Tone-via-CC**
 when `CC on`). Held notes always get their note-off, even if you move a bound, transpose, mute
 or bypass while they ring: **no stuck notes**.
 
-## Splits & layers — the point of it all
+## Splits & layers
 
-Put one Zone at the head of each Instrument Rack chain and map the bounds to macros —
-the instances stay independent, the *sync* lives in the rack:
+Put one Zone at the head of each instrument and **MIDI-map the bounds directly** (Ableton's MIDI
+map, Cmd-M) — no rack, no internal linking. Map several Zones' `Low`/`High` to the **same CC** and
+one control moves the split across all of them at once:
 
 | Stage-keyboard mode | With Zones |
 |---|---|
-| **Solo** (one sound everywhere) | one chain, limits off |
-| **Split** (bass left / keys right) | chain A `High` + chain B `Low` on **one macro** = movable split point |
-| **Layer** (two sounds together) | both chains full range (or both bypassed) |
+| **Solo** (one sound everywhere) | limits off |
+| **Split** (bass left / keys right) | Zone A `High` + Zone B `Low` on **one CC** = movable split point |
+| **Layer** (two sounds together) | both full range (or both bypassed) |
 | **Split + layer** | any mix — stack as many Zones as you like |
 
 ## Try it in the browser
