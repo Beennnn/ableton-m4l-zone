@@ -9,12 +9,19 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 7;   // 0 = MIDI out ; 1 = Low feedback ; 2 = High feedback ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state
+outlets = 8;   // 0 = MIDI out ; 1 = Low fb ; 2 = High fb ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state ; 7 = Tone value (CC-driven)
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
 var loLearn = 0, hiLearn = 0;        // armed by the Learn buttons ; the next played note sets that bound
 var held = {};                       // inPitch -> outPitch
+// Tone-via-CC : a parameterizable control CC drives the Tone (semitone) value. CC number + channel
+// are set from the UI (defaults CC 102 / ch 1 — 102-119 is the MIDI "Undefined" range, collision-free).
+// The CC *value* uses a dead-zone window: 58..69 -> -6..+5 (value = 64 + semitones), saturating outside,
+// so "value 64 + n = Tone n" with no math and no rounding. A matching CC is CONSUMED (not passed
+// downstream) ; every other CC passes through untouched.
+var ctlNum = 102, ctlChan = 1, curChan = 1;
+var center64 = 1, rangeStep = 1, ccOn = 1;   // Mode: center64 (1=CC64->0 / 0=CC0->0) ; rangeStep (1=1CC<->1semi / 0=interpolate) ; ccOn = master enable
 
 function clamp(v, a, b) { v = Math.round(v); return v < a ? a : (v > b ? b : v); }
 function shift(p)       { return clamp(p + oct * 12 + semi, 0, 127); }
@@ -60,7 +67,33 @@ function lo(v)       { loNote = clamp(v, 0, 127); names(); }
 function hion(v)     { hiOn = v ? 1 : 0; }
 function hi(v)       { hiNote = clamp(v, 0, 127); names(); }
 function octaven(v)  { oct = clamp(v, -4, 4); }
-function semin(v)    { semi = clamp(v, -12, 12); }    // "Tone" control (semitones)
+function semin(v)    { semi = clamp(v, -6, 5); }      // "Tone" control (semitones) — -6/+5 tiles exactly with the ±4 Octave knob (Roland/Korg convention)
 function muteon(v)   { muted = v ? 1 : 0; if (muted) allOff(); }
 function bypasson(v) { allOff(); bypassed = v ? 1 : 0; }
 function panic()     { allOff(); }
+
+// --- Tone via CC (parameterizable CC number + channel + mode, no hardcoding) ---
+function ctlnum(v)    { ctlNum  = clamp(v, 0, 127); }   // which CC number drives Tone
+function ctlchan(v)   { ctlChan = clamp(v, 1, 16); }    // on which MIDI channel
+function ctlcenter(v) { center64 = v ? 1 : 0; }         // 1 = center on CC 64 (window) ; 0 = center on CC 0 (wrap)
+function ctlrange(v)  { rangeStep = v ? 1 : 0; }        // 1 = Step (1 CC = 1 semitone) ; 0 = All range (interpolate)
+function ccon(v)      { ccOn = v ? 1 : 0; }             // master enable : off = the control CC just passes through, untouched
+function chan(v)      { curChan = v; }                  // latched from midiparse (channel outlet fires before the CC)
+
+// CC value (0-127) -> Tone (-6..+5), across the 4 modes (Center 0/64 x Step/All-range). An index i in
+// 0..11 picks one of the 12 semitone slots : Center sets the slot ORDER, Range sets the CC SPACING.
+function toneFromCC(v) {
+    var i;
+    if (!rangeStep)    i = Math.round(v * 11 / 127);   // All range : 12 slots spread over the whole 0..127
+    else if (center64) i = clamp(v, 58, 69) - 58;      // Step + Center 64 : window 58..69, saturate outside
+    else               i = v % 12;                     // Step + Center 0  : 1 CC = 1 semitone, wrap every 12
+    return center64 ? (i - 6)                          // Center 64 : -6,-5,..,+5  (0 in the middle)
+                    : (((i + 6) % 12) - 6);            // Center 0  : 0,+1,..,+5,-6,..,-1  (0 first, reaches -1)
+}
+function ctl(controller, value) {
+    if (ccOn && controller == ctlNum && curChan == ctlChan) {
+        try { outlet(7, toneFromCC(value)); } catch (e) {}  // drives the Tone numbox (-> semin, moves the param)
+        return;                                             // consume : the control CC does not pass on
+    }
+    outlet(0, [0xB0 + (curChan - 1), controller, value]);   // any other CC -> untouched passthrough
+}

@@ -1,4 +1,10 @@
 #!/usr/bin/env python3
+# ⚠️ SCAFFOLD / REFERENCE ONLY — this generated the ORIGINAL patch. The shipped device
+# (zone.amxd) is the source of truth: its presentation layout is hand-arranged in Max and it
+# carries later additions (Tone-via-CC enable, tuned defaults) applied by direct .amxd injection.
+# Re-running this produces the crude auto-layout and omits those additions — do NOT overwrite the
+# shipped zone.amxd / zone.maxpat with its output. Kept to document how the wiring was first built.
+#
 # gen_zone_maxpat.py — builds zone.maxpat (the "Zone" Max for Live MIDI Effect).
 # Notes -> [js zone.js] (filter [Lo,Hi) then octave/semitone shift, mute, bypass) -> midiout.
 # Everything else (CC, pitch bend, aftertouch, program, poly) passes through midiparse -> midiformat.
@@ -26,11 +32,13 @@ def lnum(id, var, short, rect, init, mn, mx, pres):
             "parameter_longname": var, "parameter_shortname": short, "parameter_type": 1,
             "parameter_mmin": mn, "parameter_mmax": mx, "parameter_initial_enable": 1, "parameter_initial": [init]}}})
 
-def ltog(id, var, short, rect, pres, color=None):
+def ltog(id, var, short, rect, pres, color=None, enum=None, init=None):
+    vo = {"parameter_longname": var, "parameter_shortname": short, "parameter_type": 2,
+          "parameter_enum": enum or ["off", "on"], "parameter_mmin": 0, "parameter_mmax": 1}
+    if init is not None:                      # default state emitted on load (e.g. mode toggles)
+        vo["parameter_initial_enable"] = 1; vo["parameter_initial"] = [init]
     extra = {"varname": var, "parameter_enable": 1, "presentation": 1, "presentation_rect": pres,
-             "saved_attribute_attributes": {"valueof": {
-                 "parameter_longname": var, "parameter_shortname": short, "parameter_type": 2,
-                 "parameter_enum": ["off", "on"], "parameter_mmin": 0, "parameter_mmax": 1}}}
+             "saved_attribute_attributes": {"valueof": vo}}
     if color: extra["activecolor"] = color   # "on" colour (teal for Low, violet for High)
     box(id, "live.toggle", None, rect, 1, 1, ["", ""], extra)
 
@@ -77,7 +85,17 @@ lnum("obj-9", "hiNote", "High", [440, 130, 60, 18], 72, 0.0, 127.0, [118, 72, 34
 note("obj-61", "C4", [156, 72, 30, 16], VIOLET_T)
 # Transpose row (y~96) : octave (coarse) + tone (fine), applied AFTER the filter
 lnum("obj-10", "octave",  "Octave", [400, 160, 60, 18],  0, -4.0,  4.0, [116, 96, 40, 16])
-lnum("obj-11", "semitone", "Tone",  [440, 160, 60, 18],  0, -12.0, 12.0, [196, 96, 40, 16])
+lnum("obj-11", "semitone", "Tone",  [440, 160, 60, 18],  0, -6.0, 5.0, [196, 96, 40, 16])
+# Tone-via-CC row (y~120) : which CC number + channel drives Tone (parameterizable, not hardcoded).
+# Default CC 102 / ch 1 — 102-119 is the MIDI "Undefined" range, collision-free with standard CCs.
+lnum("obj-14", "ctlCC", "Tone CC", [400, 190, 60, 18], 102, 0.0, 127.0, [116, 120, 40, 16])
+lnum("obj-15", "ctlCh", "Tone Ch", [480, 190, 60, 18],   1, 1.0,  16.0, [196, 120, 30, 16])
+# MIDI-routing prepends : control-change + channel from midiparse into zone.js.
+box("obj-16", "newobj", "prepend ctl",  [110, 120, 78, 22], 1, 1)
+box("obj-19", "newobj", "prepend chan", [110, 150, 86, 22], 1, 1)
+# Mode row (y~140) : Center (0/64) x Range (All/Step). Defaults 64 + Step = the "window" behaviour.
+ltog("obj-34", "ctlCenter", "Center 64", [560, 190, 24, 24], [60, 140, 15, 15], enum=["0", "64"],   init=1)
+ltog("obj-35", "ctlRange",  "Step mode", [610, 190, 24, 24], [140, 140, 15, 15], enum=["All", "Step"], init=1)
 
 # --- labels (presentation) ---
 lbl("obj-70", "Global",         [10, 11], dim=True)
@@ -96,11 +114,19 @@ box("obj-47", "comment", "learn", [520, 190, 44, 18], 1, 0, None, {"presentation
 lbl("obj-74", "Post transpose", [10, 97], dim=True)
 lbl("obj-44", "Oct",            [96, 98])
 lbl("obj-45", "Tone",           [172, 98])
+lbl("obj-75", "Tone via CC",    [10, 121], dim=True)
+lbl("obj-76", "CC#",            [96, 122])
+lbl("obj-77", "Ch",             [172, 122])
+lbl("obj-78", "Mode",           [10, 141], dim=True)
+lbl("obj-79", "Center 0/64",    [78, 142])
+lbl("obj-80", "All/Step",       [158, 142])
 
 # --- prepends (UI -> js) : source object id -> js message ---
 pre = {"loon": "obj-6", "lo": "obj-7", "hion": "obj-8", "hi": "obj-9", "octaven": "obj-10",
        "semin": "obj-11", "muteon": "obj-12", "bypasson": "obj-13",
-       "learnlo": "obj-17", "learnhi": "obj-18"}
+       "learnlo": "obj-17", "learnhi": "obj-18",
+       "ctlnum": "obj-14", "ctlchan": "obj-15",
+       "ctlcenter": "obj-34", "ctlrange": "obj-35"}
 pid = {}
 y = 170
 for i, (msg, src) in enumerate(pre.items()):
@@ -113,9 +139,15 @@ box("obj-51", "newobj", "prepend set", [640, 340, 75, 22], 1, 1)   # Hi feedback
 # --- wiring : MIDI ---
 line("obj-1", 0, "obj-2", 0)
 line("obj-2", 0, "obj-3", 0)                        # notes -> js
-for k in range(1, 7): line("obj-2", k, "obj-4", k)  # everything else -> passthrough
-line("obj-3", 0, "obj-5", 0)                        # filtered/shifted notes -> midiout
-line("obj-4", 0, "obj-5", 0)                        # passthrough -> midiout
+for k in (1, 3, 4, 5): line("obj-2", k, "obj-4", k) # poly-AT, PC, AT, PB -> passthrough
+line("obj-2", 6, "obj-4", 6)                        # channel -> midiformat (passthrough)
+line("obj-2", 2, "obj-16", 0)                       # control-change -> prepend ctl -> js (js consumes the control CC or re-emits it)
+line("obj-16", 0, "obj-3", 0)
+line("obj-2", 6, "obj-19", 0)                       # channel -> prepend chan -> js (fires before the CC, so it's latched)
+line("obj-19", 0, "obj-3", 0)
+line("obj-3", 0, "obj-5", 0)                        # js MIDI out (notes + passthrough CCs) -> midiout
+line("obj-4", 0, "obj-5", 0)                        # midiformat passthrough (non-CC) -> midiout
+line("obj-3", 7, "obj-11", 0)                       # CC-driven Tone value -> Tone numbox (-> semin, moves the param)
 
 # --- wiring : UI -> prepend -> js ---
 for msg, src in pre.items():
