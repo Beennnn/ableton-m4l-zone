@@ -69,6 +69,10 @@ Lets an external CC (a fader, a clip envelope, a script) move the Tone value. Ha
 
 Default **64 + Step** = the window: value **68 → +4**, 64 → 0, 58 → −6, 69 → +5, outside saturates.
 
+> **Drive it from a Stream Deck.** The [Trevliga Spel Stream Deck MIDI plugin](https://trevligaspel.se/streamdeck/midi/index.php)
+> fires MIDI (CC, **Program Change**, Note…) straight from physical Stream Deck keys — assign a key to send
+> `CC 102` at a fixed value and you get one-press Tone recalls, or drive any of Zone's parameters hands-on.
+
 ### Passthrough
 
 Everything that isn't a note passes through **untouched** — sustain, expression, pitch bend,
