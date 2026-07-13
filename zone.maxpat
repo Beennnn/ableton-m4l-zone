@@ -269,8 +269,9 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 8,
+          "numoutlets": 9,
           "outlettype": [
+            "",
             "",
             "",
             "",
@@ -1488,6 +1489,150 @@
           ],
           "text": "on CC"
         }
+      },
+      {
+        "box": {
+          "id": "obj-81",
+          "maxclass": "live.toggle",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ],
+          "parameter_enable": 1,
+          "patching_rect": [
+            360,
+            250,
+            24,
+            24
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            80.0,
+            150.6,
+            15.0,
+            15.0
+          ],
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_enum": [
+                "off",
+                "on"
+              ],
+              "parameter_initial": [
+                1
+              ],
+              "parameter_initial_enable": 1,
+              "parameter_longname": "octCcOn",
+              "parameter_mmax": 1,
+              "parameter_modmode": 0,
+              "parameter_shortname": "Oct on",
+              "parameter_type": 2
+            }
+          },
+          "varname": "octCcOn"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-82",
+          "maxclass": "live.numbox",
+          "numinlets": 1,
+          "numoutlets": 2,
+          "outlettype": [
+            "",
+            "float"
+          ],
+          "parameter_enable": 1,
+          "patching_rect": [
+            400,
+            250,
+            60,
+            15
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            124.0,
+            150.6,
+            24.0,
+            15.0
+          ],
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_initial": [
+                103
+              ],
+              "parameter_initial_enable": 1,
+              "parameter_longname": "octCtlNum",
+              "parameter_modmode": 0,
+              "parameter_shortname": "Oct CC",
+              "parameter_type": 1,
+              "parameter_unitstyle": 0,
+              "parameter_mmin": 0.0,
+              "parameter_mmax": 127.0
+            }
+          },
+          "varname": "octCtlNum"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-83",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ],
+          "patching_rect": [
+            360,
+            285,
+            120,
+            22
+          ],
+          "text": "prepend octccon"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-84",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ],
+          "patching_rect": [
+            400,
+            285,
+            120,
+            22
+          ],
+          "text": "prepend octctlnum"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-85",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            540,
+            400,
+            40,
+            18
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            93.0,
+            149.6,
+            34.0,
+            15.0
+          ],
+          "text": "on CC",
+          "fontsize": 9.0
+        }
       }
     ],
     "lines": [
@@ -2089,6 +2234,66 @@
           ],
           "source": [
             "obj-9",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-81",
+            0
+          ],
+          "destination": [
+            "obj-83",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-83",
+            0
+          ],
+          "destination": [
+            "obj-3",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-82",
+            0
+          ],
+          "destination": [
+            "obj-84",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-84",
+            0
+          ],
+          "destination": [
+            "obj-3",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "source": [
+            "obj-3",
+            8
+          ],
+          "destination": [
+            "obj-10",
             0
           ]
         }

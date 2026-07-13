@@ -9,7 +9,7 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 8;   // 0 = MIDI out ; 1 = Low fb ; 2 = High fb ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state ; 7 = Tone value (CC-driven)
+outlets = 9;   // 0 = MIDI out ; 1 = Low fb ; 2 = High fb ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state ; 7 = Tone value (CC-driven) ; 8 = Octave value (CC-driven)
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
@@ -21,8 +21,8 @@ var held = {};                       // inPitch -> outPitch
 // The CC *value* uses a dead-zone window: 58..69 -> -6..+5 (value = 64 + semitones), saturating outside,
 // so "value 64 + n = Tone n" with no math and no rounding. A matching CC is CONSUMED (not passed
 // downstream) ; every other CC passes through untouched.
-var ctlNum = 102, curChan = 1;   // curChan is latched only to re-emit passthrough CCs on their own channel
-var center64 = 1, rangeStep = 1, ccOn = 1;   // Mode: center64 (1=CC64->0 / 0=CC0->0) ; rangeStep (1=1CC<->1semi / 0=interpolate) ; ccOn = master enable
+var ctlNum = 102, octCtlNum = 103, curChan = 1;   // Tone CC + Octave CC ; curChan latched only to re-emit passthrough CCs
+var center64 = 1, rangeStep = 1, ccOn = 1, octCcOn = 1;   // Mode (shared by Tone+Octave): center64 (1=CC64->0 / 0=CC0->0) ; rangeStep (1=1CC<->1step / 0=interpolate) ; ccOn/octCcOn = per-target master enable
 
 function clamp(v, a, b) { v = Math.round(v); return v < a ? a : (v > b ? b : v); }
 function shift(p)       { return clamp(p + oct * 12 + semi, 0, 127); }
@@ -74,26 +74,33 @@ function bypasson(v) { allOff(); bypassed = v ? 1 : 0; }
 function panic()     { allOff(); }
 
 // --- Tone via CC (parameterizable CC number + channel + mode, no hardcoding) ---
-function ctlnum(v)    { ctlNum  = clamp(v, 0, 127); }   // which CC number drives Tone
-function ctlcenter(v) { center64 = v ? 1 : 0; }         // 1 = center on CC 64 (window) ; 0 = center on CC 0 (wrap)
-function ctlrange(v)  { rangeStep = v ? 1 : 0; }        // 1 = Step (1 CC = 1 semitone) ; 0 = All range (interpolate)
-function ccon(v)      { ccOn = v ? 1 : 0; }             // master enable : off = the control CC just passes through, untouched
+function ctlnum(v)    { ctlNum  = clamp(v, 0, 127); }    // which CC number drives Tone
+function octctlnum(v){ octCtlNum = clamp(v, 0, 127); }   // which CC number drives Octave
+function ctlcenter(v) { center64 = v ? 1 : 0; }         // 1 = center on CC 64 (window) ; 0 = center on CC 0 (wrap)  [shared]
+function ctlrange(v)  { rangeStep = v ? 1 : 0; }        // 1 = Step (1 CC = 1 step) ; 0 = All range (interpolate)     [shared]
+function ccon(v)      { ccOn = v ? 1 : 0; }             // Tone master enable : off = the Tone CC just passes through
+function octccon(v)   { octCcOn = v ? 1 : 0; }          // Octave master enable : off = the Octave CC just passes through
 function chan(v)      { curChan = v; }                  // latched from midiparse (channel outlet fires before the CC)
 
-// CC value (0-127) -> Tone (-6..+5), across the 4 modes (Center 0/64 x Step/All-range). An index i in
-// 0..11 picks one of the 12 semitone slots : Center sets the slot ORDER, Range sets the CC SPACING.
-function toneFromCC(v) {
-    var i;
-    if (!rangeStep)    i = Math.round(v * 11 / 127);   // All range : 12 slots spread over the whole 0..127
-    else if (center64) i = clamp(v, 58, 69) - 58;      // Step + Center 64 : window 58..69, saturate outside
-    else               i = v % 12;                     // Step + Center 0  : 1 CC = 1 semitone, wrap every 12
-    return center64 ? (i - 6)                          // Center 64 : -6,-5,..,+5  (0 in the middle)
-                    : (((i + 6) % 12) - 6);            // Center 0  : 0,+1,..,+5,-6,..,-1  (0 first, reaches -1)
+// CC value (0-127) -> a shift in [lo..hi], across the 4 modes (Center 0/64 x Step/All-range). Shared by
+// Tone (lo=-6, hi=+5 -> 12 slots) and Octave (lo=-4, hi=+4 -> 9 slots) ; Center + Range are common to both.
+// An index i in 0..N-1 picks a slot : Center sets the slot ORDER, Range sets the CC SPACING.
+function ccToShift(v, lo, hi) {
+    var N = hi - lo + 1, i;
+    if (!rangeStep)    i = Math.round(v * (N - 1) / 127);            // All range : N slots over the whole 0..127
+    else if (center64) i = clamp(v, 64 + lo, 64 + hi) - (64 + lo);  // Step + Center 64 : window around 64 (value 64 -> 0)
+    else               i = v % N;                                   // Step + Center 0  : 1 CC = 1 step, wrap every N
+    return center64 ? (i + lo)                                      // Center 64 : lo..hi  (0 in the middle)
+                    : (((i - lo) % N) + lo);                        // Center 0  : 0,+1,..,hi,lo,..,-1  (0 first)
 }
 function ctl(controller, value) {
-    if (ccOn && controller == ctlNum) {
-        try { outlet(7, toneFromCC(value)); } catch (e) {}  // drives the Tone numbox (-> semin, moves the param)
-        return;                                             // consume : the control CC does not pass on
+    if (ccOn && controller == ctlNum) {                    // Tone CC
+        try { outlet(7, ccToShift(value, -6, 5)); } catch (e) {}   // -> Tone numbox (semin)
+        return;                                                    // consume
     }
-    outlet(0, [0xB0 + (curChan - 1), controller, value]);   // any other CC -> untouched passthrough
+    if (octCcOn && controller == octCtlNum) {              // Octave CC
+        try { outlet(8, ccToShift(value, -4, 4)); } catch (e) {}   // -> Octave numbox (octaven)
+        return;                                                    // consume
+    }
+    outlet(0, [0xB0 + (curChan - 1), controller, value]);  // any other CC -> untouched passthrough
 }
