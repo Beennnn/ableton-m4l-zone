@@ -58,19 +58,21 @@ values are just neutral starting points for when you switch a limit on.
 | **Oct** (Octave) | 0 | Coarse shift, **±4 octaves**. |
 | **Tone** | 0 | Fine shift, **−6…+5 semitones**. Tiles exactly with Octave (no gap, no duplicate) — the Roland/Korg half-octave convention. Final pitch = `note + Oct×12 + Tone`, clamped 0–127. |
 
-### Tone via CC — drive `Tone` from an incoming MIDI controller
+### Transpose via CC — drive `Tone` and `Octave` from MIDI CCs
 
-Lets an external CC (a fader, a clip envelope, a script) move the Tone value. Handy when you
-**author** the CC by value (e.g. a clip sending CC to this track).
+Lets external CCs (a fader, a clip envelope, a script) move the Tone and/or Octave value. Handy
+when you **author** the CC by value (e.g. a clip sending CC to this track). Each has its own CC
+number and enable; the mapping **mode is shared**.
 
 | Field | Default | Impact |
 |---|---|---|
-| **CC on** | on | Master enable. On = the watched CC drives Tone and is **consumed** (never reaches the instrument downstream). Off = that CC passes through untouched, Tone unaffected (feature disabled). |
-| **CC#** | 102 | Which CC number is watched, on **any channel** that reaches the track. **102–119** is the MIDI "Undefined" range → no collision with mod-wheel (1), expression (11), sustain (64), cutoff (74)… (Channel is filtered by Ableton's track input, so there's no channel field here.) |
-| **Center** | 64 | Where Tone 0 sits in the CC **value**. `64` = value 64 → Tone 0 (a window around 64). `0` = value 0 → Tone 0 (wraps, so you can reach the negatives even though a CC value never goes below 0). |
-| **Range** | Step | `Step` = 1 CC value = 1 semitone (a 12-value window; the rest saturates or wraps). `All` = the whole 0–127 sweep is interpolated across the 12 semitones. |
+| **Tone on** / **Oct on** | on | Per-target master enable. On = the watched CC drives Tone / Octave and is **consumed** (never reaches the instrument). Off = that CC passes through untouched. |
+| **Tone CC#** | 102 | Which CC number drives Tone, on **any channel** that reaches the track. **102–119** is the MIDI "Undefined" range → no collision with mod-wheel (1), expression (11), sustain (64), cutoff (74)… (Channel is Ableton's track-input job — no channel field here.) |
+| **Oct CC#** | 103 | Which CC number drives Octave (same rules). |
+| **Center** | 64 | *(shared)* Where 0 sits in the CC **value**. `64` = value 64 → 0 (a window around 64). `0` = value 0 → 0 (wraps, so you reach the negatives even though a CC value never goes below 0). |
+| **Range** | Step | *(shared)* `Step` = 1 CC value = 1 step (a window; the rest saturates or wraps). `All` = the whole 0–127 sweep is interpolated across the steps. |
 
-**The four modes** (Center × Range), output folded to the 12 values −6…+5:
+**The four modes** (Center × Range) — shown for Tone (folded to −6…+5); **Octave works identically** with its own ±4 range (9 steps, `value 64 + n`):
 
 | | **Step** (1 value = 1 semitone) | **All** (interpolate 0–127) |
 |---|---|---|
@@ -87,8 +89,8 @@ Default **64 + Step** = the window: value **68 → +4**, 64 → 0, 58 → −6, 
 ### Passthrough
 
 Everything that isn't a note passes through **untouched** — sustain, expression, pitch bend,
-aftertouch, program change, and **any CC except the one watched by Tone-via-CC** (consumed
-when `CC on`). Held notes always get their note-off, even if you move a bound, transpose, mute
+aftertouch, program change, and **any CC except the ones assigned to Tone / Octave** (each
+consumed while its enable is on). Held notes always get their note-off, even if you move a bound, transpose, mute
 or bypass while they ring: **no stuck notes**.
 
 ## Splits & layers
