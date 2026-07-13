@@ -81,6 +81,13 @@ number and enable; the mapping **mode is shared**.
 
 Default **64 + Step** = the window: value **68 → +4**, 64 → 0, 58 → −6, 69 → +5, outside saturates.
 
+**Why a CC per target, with modes?** Octave (9 values) and Tone (12 values) are far coarser than a
+CC's 127 steps — a straight linear sweep wastes most of the range and lands *between* values. So each
+shift gets its **own CC**, plus a shared choice of **how** the value maps onto its few slots — in
+particular the window **around 64**, where `value 64 = 0` and every step is one increment
+(`64 + n = n`): trivial to author by hand and precise, instead of hunting for the right point on a
+127-step fader.
+
 > **Drive it from a Stream Deck.** The [Trevliga Spel Stream Deck MIDI plugin](https://trevligaspel.se/streamdeck/midi/index.php)
 > is an absolute gem — it fires MIDI (CC, **Program Change**, Note…) straight from physical Stream Deck keys.
 > Assign a key to send `CC 102` at a fixed value and you get one-press Tone recalls, or drive any of Zone's
