@@ -9,12 +9,21 @@
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 9;   // 0 = MIDI out ; 1 = Low fb ; 2 = High fb ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state ; 7 = Tone value (CC-driven) ; 8 = Octave value (CC-driven)
+outlets = 10;  // 0 = MIDI out ; 1 = Low fb ; 2 = High fb ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state ; 7 = Tone value (CC-driven) ; 8 = Octave value (CC-driven) ; 9 = WLED lights out (zone boundaries -> OpenLamp / wled-midi `zone` posfn)
 
 var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
 var loLearn = 0, hiLearn = 0;        // armed by the Learn buttons ; the next played note sets that bound
 var held = {};                       // inPitch -> outPitch
+
+// --- WLED lights (outlet 9) -----------------------------------------------------------------------
+// Optionally *show* this instrument's keyboard zone on a WLED strip. We hold two notes — the zone's
+// low and high boundary — on `lightChan`, sent to the OpenLamp MIDI port; wled-midi's `zone` position
+// function lights the LED band between the lowest and highest held note, in that channel's colour. So
+// each Zone instance paints its own coloured band on the strip, and moving a split moves the band live.
+// The channel picks the colour (wled-midi hand/zone map: ch1 = hand 1, ch2 = hand 2, …).
+var lightsOn = 0, lightChan = 1;
+var litLo = -1, litHi = -1;          // boundary notes currently held on the lights port (-1 = none) — so a move clears the old band
 // Tone-via-CC : a control CC drives the Tone (semitone) value. The CC number is set from the UI
 // (default 102 — 102-119 is the MIDI "Undefined" range, collision-free). Channel is NOT filtered here:
 // Ableton's track input is the natural channel gate, so we act on the CC on whatever channel reaches us.
@@ -45,8 +54,8 @@ function learnhi() { hiLearn = 1; arm(); }
 
 function list(pitch, velocity) {
     if (velocity > 0) {
-        if (loLearn) { loNote = clamp(pitch, 0, 127); loLearn = 0; outlet(1, loNote); names(); arm(); }
-        if (hiLearn) { hiNote = clamp(pitch, 0, 127); hiLearn = 0; outlet(2, hiNote); names(); arm(); }
+        if (loLearn) { loNote = clamp(pitch, 0, 127); loLearn = 0; outlet(1, loNote); names(); arm(); emitLights(); }
+        if (hiLearn) { hiNote = clamp(pitch, 0, 127); hiLearn = 0; outlet(2, hiNote); names(); arm(); emitLights(); }
     }
     if (velocity > 0) noteOn(pitch, velocity);
     else              noteOff(pitch);
@@ -62,16 +71,48 @@ function noteOff(p) {
 }
 function allOff() { for (var p in held) noteOff(Number(p)); }
 
-function loadbang() { names(); arm(); }               // restore note-name labels + learn labels when the device loads
-function loon(v)     { loOn = v ? 1 : 0; }
-function lo(v)       { loNote = clamp(v, 0, 127); names(); }
-function hion(v)     { hiOn = v ? 1 : 0; }
-function hi(v)       { hiNote = clamp(v, 0, 127); names(); }
+// The zone's effective span in MIDI notes. A side with its limit off is open (0 / 127). High is
+// exclusive in the filter (a note passes if p < hiNote), so the top *playing* key is hiNote-1 — that's
+// the boundary we light, keeping the lit band flush with what actually sounds.
+function zoneLo() { return loOn ? loNote : 0; }
+function zoneHi() { var h = hiOn ? hiNote - 1 : 127; var lo = zoneLo(); return clamp(h < lo ? lo : h, 0, 127); }
+
+// Send the zone to the WLED lights: hold the two boundary notes on lightChan (outlet 9 -> midiout ->
+// OpenLamp). wled-midi's `zone` posfn then lights the LED band between them. Cleared when lights are off
+// or the device is muted/bypassed (the zone isn't meaningfully filtering then). Idempotent: re-emits
+// only on an actual boundary change, so dragging a split doesn't spam the port. try/catch is the same
+// load-order armour used elsewhere — on an autowatch hot-reload Max hasn't added outlet 9 yet (that needs
+// a full device reload), so a missing outlet must never throw and break note output.
+function clearLights() {
+    if (litLo >= 0) { try { outlet(9, [0x90 + (lightChan - 1), litLo, 0]); } catch (e) {} }
+    if (litHi >= 0) { try { outlet(9, [0x90 + (lightChan - 1), litHi, 0]); } catch (e) {} }
+    litLo = -1; litHi = -1;
+}
+function emitLights() {
+    if (!lightsOn || muted || bypassed) { clearLights(); return; }
+    var lo = zoneLo(), hi = zoneHi();
+    if (lo === litLo && (hi === litHi || (hi === lo && litHi === -1))) return;   // unchanged
+    clearLights();
+    var st = 0x90 + (lightChan - 1);
+    try {
+        outlet(9, [st, lo, 100]);                 // low boundary (velocity is a placeholder — `zone` maps span, not level)
+        if (hi !== lo) outlet(9, [st, hi, 100]);  // high boundary (a single note if the zone collapses to one key)
+    } catch (e) {}
+    litLo = lo; litHi = (hi !== lo) ? hi : -1;
+}
+function lightson(v)  { lightsOn = v ? 1 : 0; emitLights(); }   // master enable for the WLED band
+function lightchan(v) { clearLights(); lightChan = clamp(v, 1, 16); emitLights(); }  // colour = wled-midi channel/hand
+
+function loadbang() { names(); arm(); emitLights(); } // restore note-name + learn labels, and (re)paint the band when the device loads
+function loon(v)     { loOn = v ? 1 : 0; emitLights(); }
+function lo(v)       { loNote = clamp(v, 0, 127); names(); emitLights(); }
+function hion(v)     { hiOn = v ? 1 : 0; emitLights(); }
+function hi(v)       { hiNote = clamp(v, 0, 127); names(); emitLights(); }
 function octaven(v)  { oct = clamp(v, -4, 4); }
 function semin(v)    { semi = clamp(v, -6, 5); }      // "Tone" control (semitones) — -6/+5 tiles exactly with the ±4 Octave knob (Roland/Korg convention)
-function muteon(v)   { muted = v ? 1 : 0; if (muted) allOff(); }
-function bypasson(v) { allOff(); bypassed = v ? 1 : 0; }
-function panic()     { allOff(); }
+function muteon(v)   { muted = v ? 1 : 0; if (muted) allOff(); emitLights(); }
+function bypasson(v) { allOff(); bypassed = v ? 1 : 0; emitLights(); }
+function panic()     { allOff(); clearLights(); }
 
 // --- Tone via CC (parameterizable CC number + channel + mode, no hardcoding) ---
 function ctlnum(v)    { ctlNum  = clamp(v, 0, 127); }    // which CC number drives Tone

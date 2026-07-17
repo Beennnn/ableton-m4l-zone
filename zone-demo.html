@@ -65,6 +65,8 @@
     </div>
     <svg id="kb" viewBox="0 0 580 164" role="img" aria-label="Keyboard split into three colored zones"></svg>
     <div class="legend" id="legend"></div>
+    <p class="sub" style="margin-top:20px">↳ <b>On a WLED strip</b> (via the open <a href="https://github.com/openlamp/wled-midi">wled-midi</a> convention) — each zone lights its own coloured band, moving live with the split.</p>
+    <svg id="strip" viewBox="0 0 580 32" role="img" aria-label="LED strip showing the three zones as coloured bands"></svg>
   </section>
 
   <section class="card">
@@ -88,7 +90,7 @@
   var totW=whites.length*kW;
   var xOf=function(n){var c=0;for(var m=LO;m<n;m++)if(isW(m))c++;return c*kW;};
   var zoneOf=function(n,a,b){return n<a?0:(n<b?1:2);};
-  var kb=document.getElementById('kb'),rack=document.getElementById('rack'),legend=document.getElementById('legend');
+  var kb=document.getElementById('kb'),rack=document.getElementById('rack'),legend=document.getElementById('legend'),strip=document.getElementById('strip');
   var s1=document.getElementById('s1'),s2=document.getElementById('s2'),v1=document.getElementById('v1'),v2=document.getElementById('v2');
 
   function keyboard(a,b){
@@ -131,6 +133,17 @@
     rack.innerHTML='<defs><marker id="ar" markerWidth="7" markerHeight="7" refX="6" refY="3.5" orient="auto"><path d="M0 0 L7 3.5 L0 7 z" fill="#322d40"/></marker></defs>'+s;
   }
 
+  // The WLED strip: what wled-midi's `zone` posfn paints — each zone as a contiguous coloured band.
+  // 88 LEDs mapped across the played range; each LED takes its zone's colour. Mirrors the keyboard above.
+  function stripSvg(a,b){
+    var N=88,W=totW,cw=W/N,s='';
+    s+='<rect x="0" y="4" width="'+W+'" height="24" rx="4" fill="#131019"/>';
+    for(var i=0;i<N;i++){
+      var note=LO+Math.round(i*(HI-LO)/(N-1)),z=zoneOf(note,a,b);
+      s+='<rect x="'+(i*cw+0.7)+'" y="7" width="'+(cw-1.4)+'" height="18" rx="1.5" fill="'+Z[z].c+'"/>';
+    }
+    strip.setAttribute('viewBox','0 0 '+W+' 32');strip.innerHTML=s;
+  }
   function legendHtml(a,b){
     var r=[[LO,a-1],[a,b-1],[b,HI]];
     legend.innerHTML=Z.map(function(z,i){return '<div class="lg"><span class="dot" style="background:'+z.c+'"></span><span><b>'+z.n+'</b> · '+z.i+'</span><span class="rng">'+(r[i][1]<r[i][0]?'—':nm(r[i][0])+'–'+nm(r[i][1]))+'</span></div>';}).join('');
@@ -139,7 +152,7 @@
     var a=+s1.value,b=+s2.value;
     if(a>b){if(e&&e.target===s1){b=a;s2.value=a;}else{a=b;s1.value=b;}}
     v1.textContent=nm(a)+' ('+a+')';v2.textContent=nm(b)+' ('+b+')';
-    keyboard(a,b);rackDiagram(a,b);legendHtml(a,b);
+    keyboard(a,b);stripSvg(a,b);rackDiagram(a,b);legendHtml(a,b);
   }
   s1.addEventListener('input',render);s2.addEventListener('input',render);
 

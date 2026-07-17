@@ -269,8 +269,9 @@
           "id": "obj-3",
           "maxclass": "newobj",
           "numinlets": 1,
-          "numoutlets": 9,
+          "numoutlets": 10,
           "outlettype": [
+            "",
             "",
             "",
             "",
@@ -1633,6 +1634,161 @@
           "text": "on CC",
           "fontsize": 9.0
         }
+      },
+      {
+        "box": {
+          "id": "obj-86",
+          "maxclass": "live.toggle",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ],
+          "parameter_enable": 1,
+          "patching_rect": [
+            200.0,
+            500.0,
+            24.0,
+            24.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            10.0,
+            152.0,
+            15.0,
+            15.0
+          ],
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_enum": [
+                "off",
+                "on"
+              ],
+              "parameter_longname": "lights",
+              "parameter_mmax": 1,
+              "parameter_modmode": 0,
+              "parameter_shortname": "Lights",
+              "parameter_type": 2
+            }
+          },
+          "varname": "lights"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-87",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ],
+          "patching_rect": [
+            200.0,
+            535.0,
+            110.0,
+            22.0
+          ],
+          "text": "prepend lightson"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-88",
+          "maxclass": "live.numbox",
+          "numinlets": 1,
+          "numoutlets": 2,
+          "outlettype": [
+            "",
+            "float"
+          ],
+          "parameter_enable": 1,
+          "patching_rect": [
+            320.0,
+            500.0,
+            60.0,
+            15.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            30.0,
+            152.0,
+            24.0,
+            15.0
+          ],
+          "saved_attribute_attributes": {
+            "valueof": {
+              "parameter_initial": [
+                1
+              ],
+              "parameter_initial_enable": 1,
+              "parameter_longname": "lightchan",
+              "parameter_mmax": 16,
+              "parameter_mmin": 1,
+              "parameter_modmode": 0,
+              "parameter_shortname": "LightCh",
+              "parameter_type": 1,
+              "parameter_unitstyle": 0
+            }
+          },
+          "textjustification": 2,
+          "varname": "lightchan"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-89",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 1,
+          "outlettype": [
+            ""
+          ],
+          "patching_rect": [
+            320.0,
+            535.0,
+            110.0,
+            22.0
+          ],
+          "text": "prepend lightchan"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-91",
+          "maxclass": "comment",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            200.0,
+            470.0,
+            120.0,
+            20.0
+          ],
+          "presentation": 1,
+          "presentation_rect": [
+            56.0,
+            152.0,
+            68.0,
+            16.0
+          ],
+          "text": "WLED lights"
+        }
+      },
+      {
+        "box": {
+          "id": "obj-90",
+          "maxclass": "newobj",
+          "numinlets": 1,
+          "numoutlets": 0,
+          "patching_rect": [
+            30.0,
+            565.0,
+            110.0,
+            22.0
+          ],
+          "text": "midiout OpenLamp"
+        }
       }
     ],
     "lines": [
@@ -2297,6 +2453,66 @@
             0
           ]
         }
+      },
+      {
+        "patchline": {
+          "destination": [
+            "obj-87",
+            0
+          ],
+          "source": [
+            "obj-86",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "destination": [
+            "obj-3",
+            0
+          ],
+          "source": [
+            "obj-87",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "destination": [
+            "obj-89",
+            0
+          ],
+          "source": [
+            "obj-88",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "destination": [
+            "obj-3",
+            0
+          ],
+          "source": [
+            "obj-89",
+            0
+          ]
+        }
+      },
+      {
+        "patchline": {
+          "destination": [
+            "obj-90",
+            0
+          ],
+          "source": [
+            "obj-3",
+            9
+          ]
+        }
       }
     ],
     "parameters": {
@@ -2396,7 +2612,17 @@
           ]
         }
       },
-      "inherited_shortname": 1
+      "inherited_shortname": 1,
+      "obj-86": [
+        "lights",
+        "Lights",
+        0
+      ],
+      "obj-88": [
+        "lightchan",
+        "LightCh",
+        0
+      ]
     },
     "latency": 0,
     "is_mpe": 0,
