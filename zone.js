@@ -1,19 +1,34 @@
 // zone.js — brain of the "Zone" Max for Live MIDI device.
 // Keyboard-zone / split filter, THEN octave + tone (semitone) shift, plus mute and bypass.
-// No on-screen keyboard: the bounds are set either by typing the MIDI value in the numbox, or by
-// clicking a "learn" button (arms that bound) then playing the note you want as the limit.
+// No on-screen keyboard: the notes are set either by typing the MIDI value in the numbox, or by
+// clicking a "learn" button (arms that note) then playing the note you want as the limit.
+//
+// FOUR NUMBERED NOTES, each with two role checkboxes (added on Benoit's request):
+//   noteK : loK = "keep notes >= noteK" (acts as a LOW bound)  · hiK = "keep notes < noteK" (HIGH bound)
+// So each note can filter in either direction, independently. Passing rule (see passes()):
+//   lower = max of the active ">=" notes (default 0) ; upper = min of the active "<" notes (default 128).
+//   lower <= upper -> BAND : keep [lower, upper)   (the classic split — default lo1+hi2)
+//   lower >  upper -> NOTCH: keep p>=lower OR p<upper  (the two ends, middle muted — e.g. hi1+lo2)
+// The default (lo1 on, hi2 on, hi1/lo2 off) reproduces the old [note1, note2) band exactly. A note
+// with NO active role is fully open. Both roles on the SAME note (e.g. lo1+hi1) => lower==upper==note1
+// => empty, left as-is (an assumed "mute this note and up-or-down" corner, not special-cased).
 //
 // Signal path: bypass -> untouched (no transpose) ; mute -> dropped ;
-//   else inside [Low, High) (a side with its limit off is open) -> pass, shifted by octave*12 + tone.
+//   else passes(p) -> pass, shifted by octave*12 + tone.
 //
 // MIT — free to use, modify and share.
 
 autowatch = 1;
-outlets = 10;  // 0 = MIDI out ; 1 = Low fb ; 2 = High fb ; 3 = Low note-name ; 4 = High note-name ; 5 = Low learn-state ; 6 = High learn-state ; 7 = Tone value (CC-driven) ; 8 = Octave value (CC-driven) ; 9 = WLED lights out (zone boundaries -> OpenLamp / wled-midi `zone` posfn)
+outlets = 14;  // 0 = MIDI out ; 1/2 = note1/note2 fb ; 3/4 = note1/note2 name ; 5/6 = note1/note2 learn-state ; 7 = Tone value (CC-driven) ; 8 = Octave value (CC-driven) ; 9 = WLED lights out (zone boundaries -> OpenLamp / wled-midi `zone` posfn) ; 10/11 = note3/note4 fb ; 12/13 = note3/note4 name (note3/note4 have no learn-state label — matches note2)
 
-var loOn = 0, loNote = 0, hiOn = 0, hiNote = 128;
+// Note-filter state. Vars are named *On / nK so they never clash with the same-named message
+// handlers Max calls (function lo1() sets lo1On, etc. — a var and a function can't share a name).
+var lo1On = 0, hi1On = 0, n1 = 48;   // note1 (MIDI value nK) + its two role flags
+var lo2On = 0, hi2On = 0, n2 = 72;   // note2
+var lo3On = 0, hi3On = 0, n3 = 0;    // note3
+var lo4On = 0, hi4On = 0, n4 = 0;    // note4
 var oct = 0, semi = 0, muted = 0, bypassed = 0;
-var loLearn = 0, hiLearn = 0;        // armed by the Learn buttons ; the next played note sets that bound
+var l1arm = 0, l2arm = 0, l3arm = 0, l4arm = 0;   // armed by the Learn buttons ; the next played note sets that note
 var held = {};                       // inPitch -> outPitch
 
 // --- WLED lights (outlet 9) -----------------------------------------------------------------------
@@ -35,7 +50,27 @@ var center64 = 1, rangeStep = 1, ccOn = 1, octCcOn = 1;   // Mode (shared by Ton
 
 function clamp(v, a, b) { v = Math.round(v); return v < a ? a : (v > b ? b : v); }
 function shift(p)       { return clamp(p + oct * 12 + semi, 0, 127); }
-function passes(p)      { return (!loOn || p >= loNote) && (!hiOn || p < hiNote); }
+
+// The kept region as [lower, upper). Each active role tightens one side (>= tightens lower, < tightens
+// upper). Neutral defaults (0 / 128) mean "no bound on that side" for MIDI 0..127.
+function bounds() {
+    var lo = 0, hi = 128;
+    if (lo1On) lo = Math.max(lo, n1);
+    if (lo2On) lo = Math.max(lo, n2);
+    if (lo3On) lo = Math.max(lo, n3);
+    if (lo4On) lo = Math.max(lo, n4);
+    if (hi1On) hi = Math.min(hi, n1);
+    if (hi2On) hi = Math.min(hi, n2);
+    if (hi3On) hi = Math.min(hi, n3);
+    if (hi4On) hi = Math.min(hi, n4);
+    return [lo, hi];
+}
+// lower <= upper -> band (keep the middle) ; lower > upper -> the bounds crossed outward, so the intent
+// is a NOTCH: keep the two ends and mute the gap. One line covers band, single-sided cut, and notch.
+function passes(p) {
+    var b = bounds(), lo = b[0], hi = b[1];
+    return (lo <= hi) ? (p >= lo && p < hi) : (p >= lo || p < hi);
+}
 
 // Read-only note-name display (outlets 3/4 -> two comment boxes). Ableton Live convention: 60 = C3
 // (octave = floor(n/12) - 2), so 0 = C-2 and 127 = G8. Display only — the editable value stays the
@@ -43,19 +78,21 @@ function passes(p)      { return (!loOn || p >= loNote) && (!hiOn || p < hiNote)
 // FULL device reload, not an autowatch hot-reload) so a missing outlet can never break note output.
 var NOTE_NAMES = ["C", "C#", "D", "D#", "E", "F", "F#", "G", "G#", "A", "A#", "B"];
 function noteName(n) { n = clamp(n, 0, 127); return NOTE_NAMES[n % 12] + (Math.floor(n / 12) - 2); }
-function names()     { try { outlet(3, "set", noteName(loNote)); outlet(4, "set", noteName(hiNote)); } catch (e) {} }
+function names()     { try { outlet(3, "set", noteName(n1)); outlet(4, "set", noteName(n2)); outlet(12, "set", noteName(n3)); outlet(13, "set", noteName(n4)); } catch (e) {} }
 
-// Learn buttons: click to arm, then play a note to set that bound (= MIDI learn for the limit).
+// Learn buttons: click to arm, then play a note to set that note (= MIDI learn for the limit).
 // arm() drives the label under each button: "play" while armed (prompt + armed indicator), "learn"
 // idle. It flips back to "learn" the instant the note is captured, so you always see the state.
-function arm()     { try { outlet(5, "set", loLearn ? "play" : "learn"); outlet(6, "set", hiLearn ? "play" : "learn"); } catch (e) {} }
-function learnlo() { loLearn = 1; arm(); }
-function learnhi() { hiLearn = 1; arm(); }
+function arm()     { try { outlet(5, "set", l1arm ? "play" : "learn"); outlet(6, "set", l2arm ? "play" : "learn"); } catch (e) {} }
+function learn1()  { l1arm = 1; arm(); }
+function learn2()  { l2arm = 1; arm(); }
 
 function list(pitch, velocity) {
     if (velocity > 0) {
-        if (loLearn) { loNote = clamp(pitch, 0, 127); loLearn = 0; outlet(1, loNote); names(); arm(); emitLights(); }
-        if (hiLearn) { hiNote = clamp(pitch, 0, 127); hiLearn = 0; outlet(2, hiNote); names(); arm(); emitLights(); }
+        if (l1arm) { n1 = clamp(pitch, 0, 127); l1arm = 0; outlet(1, n1); names(); arm(); emitLights(); }
+        if (l2arm) { n2 = clamp(pitch, 0, 127); l2arm = 0; outlet(2, n2); names(); arm(); emitLights(); }
+        if (l3arm) { n3 = clamp(pitch, 0, 127); l3arm = 0; outlet(10, n3); names(); emitLights(); }
+        if (l4arm) { n4 = clamp(pitch, 0, 127); l4arm = 0; outlet(11, n4); names(); emitLights(); }
     }
     if (velocity > 0) noteOn(pitch, velocity);
     else              noteOff(pitch);
@@ -71,11 +108,12 @@ function noteOff(p) {
 }
 function allOff() { for (var p in held) noteOff(Number(p)); }
 
-// The zone's effective span in MIDI notes. A side with its limit off is open (0 / 127). High is
-// exclusive in the filter (a note passes if p < hiNote), so the top *playing* key is hiNote-1 — that's
-// the boundary we light, keeping the lit band flush with what actually sounds.
-function zoneLo() { return loOn ? loNote : 0; }
-function zoneHi() { var h = hiOn ? hiNote - 1 : 127; var lo = zoneLo(); return clamp(h < lo ? lo : h, 0, 127); }
+// The zone's effective span in MIDI notes, for the WLED band. High is exclusive in the filter (a note
+// passes if p < upper), so the top *playing* key is upper-1 — that's the boundary we light, keeping the
+// lit band flush with what actually sounds. In the NOTCH case (bounds crossed) the lit band collapses to
+// the lower boundary — a two-band notch isn't representable with a single lit span, so we don't try.
+function zoneLo() { return bounds()[0]; }
+function zoneHi() { var b = bounds(); var h = b[1] - 1; var lo = b[0]; return clamp(h < lo ? lo : h, 0, 127); }
 
 // Send the zone to the WLED lights: hold the two boundary notes on lightChan (outlet 9 -> midiout ->
 // OpenLamp). wled-midi's `zone` posfn then lights the LED band between them. Cleared when lights are off
@@ -104,10 +142,20 @@ function lightson(v)  { lightsOn = v ? 1 : 0; emitLights(); }   // master enable
 function lightchan(v) { clearLights(); lightChan = clamp(v, 1, 16); emitLights(); }  // colour = wled-midi channel/hand
 
 function loadbang() { names(); arm(); emitLights(); } // restore note-name + learn labels, and (re)paint the band when the device loads
-function loon(v)     { loOn = v ? 1 : 0; emitLights(); }
-function lo(v)       { loNote = clamp(v, 0, 127); names(); emitLights(); }
-function hion(v)     { hiOn = v ? 1 : 0; emitLights(); }
-function hi(v)       { hiNote = clamp(v, 0, 127); names(); emitLights(); }
+function lo1(v)      { lo1On = v ? 1 : 0; emitLights(); }   // noteK acts as a LOW bound  (keep >= noteK)
+function hi1(v)      { hi1On = v ? 1 : 0; emitLights(); }   // noteK acts as a HIGH bound (keep < noteK)
+function lo2(v)      { lo2On = v ? 1 : 0; emitLights(); }
+function hi2(v)      { hi2On = v ? 1 : 0; emitLights(); }
+function lo3(v)      { lo3On = v ? 1 : 0; emitLights(); }
+function hi3(v)      { hi3On = v ? 1 : 0; emitLights(); }
+function lo4(v)      { lo4On = v ? 1 : 0; emitLights(); }
+function hi4(v)      { hi4On = v ? 1 : 0; emitLights(); }
+function note1(v)    { n1 = clamp(v, 0, 127); names(); emitLights(); }
+function note2(v)    { n2 = clamp(v, 0, 127); names(); emitLights(); }
+function note3(v)    { n3 = clamp(v, 0, 127); names(); emitLights(); }
+function note4(v)    { n4 = clamp(v, 0, 127); names(); emitLights(); }
+function learn3()    { l3arm = 1; }   // note3/note4 arm silently (no learn-state label, like note2)
+function learn4()    { l4arm = 1; }
 function octaven(v)  { oct = clamp(v, -4, 4); }
 function semin(v)    { semi = clamp(v, -6, 5); }      // "Tone" control (semitones) — -6/+5 tiles exactly with the ±4 Octave knob (Roland/Korg convention)
 function muteon(v)   { muted = v ? 1 : 0; if (muted) allOff(); emitLights(); }
