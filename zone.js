@@ -11,8 +11,8 @@
 // No box ticked on a side = that side open. Both min+max on the SAME note = lower==upper -> empty (assumed).
 //
 // No on-screen keyboard: each note is set by typing the MIDI value in its numbox, or by clicking its
-// Learn button (arms it) then playing the note. Signal path: bypass -> untouched (no transpose) ;
-// mute -> dropped ; else passes(p) -> pass, shifted by octave*12 + tone.
+// Learn button (arms it) then playing the note. Signal path: mute -> dropped ; bypass -> ignore the
+// LIMITS only (every note passes) but STILL transposed ; else passes(p) -> pass, shifted by octave*12 + tone.
 //
 // MIT — free to use, modify and share.
 
@@ -110,9 +110,9 @@ function list(pitch, velocity) {
 }
 function noteOn(p, v) {
     noteOff(p);
-    if (bypassed) { outlet(0, [0x90, p, v]); held[p] = p; return; }   // bypass = raw, no transpose
     if (muted) return;                                                 // mute = block everything
-    if (passes(p)) { var o = shift(p); outlet(0, [0x90, o, v]); held[p] = o; }
+    // bypass = ignore the LIMITS only (every note passes) — the octave/tone transpose STILL applies.
+    if (bypassed || passes(p)) { var o = shift(p); outlet(0, [0x90, o, v]); held[p] = o; }
 }
 function noteOff(p) {
     if (held[p] !== undefined) { outlet(0, [0x90, held[p], 0]); delete held[p]; }
@@ -135,7 +135,7 @@ function clearLights() {
 // (passes the filter), grey = muted. Strict reading: a Max boundary note is < exclusive, so it shows grey.
 function updateIncl() {
     for (var k = 0; k < 5; k++) {
-        var on = passes(notes[k]);
+        var on = muted ? 0 : (bypassed ? 1 : passes(notes[k]));   // mute -> all grey ; bypass -> all green (limits off)
         try { outlet(15, "ind" + (k + 1), "bgcolor", on ? 0.18 : 0.28, on ? 0.76 : 0.28, on ? 0.45 : 0.28, 1.0); } catch (e) {}
     }
 }
