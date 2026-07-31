@@ -10,9 +10,12 @@ then transposes the result. Two things make it worth it:
   **downstream**. So you can transpose the sound as much as you like and the split boundary
   stays exactly where you set it — it never transposes itself. Define the split once, shift the
   sound freely on top.
-- **Mappable min/max bounds — which Ableton can't do natively.** `Low` and `High` are real Live
-  parameters, so the split point is **MIDI-mappable and automatable** (Ableton's built-in key
-  zones are not). Map several Zones' bounds to one CC and move a split across instruments, live.
+- **Mappable note bounds — which Ableton can't do natively.** Each of five candidate notes is a real
+  Live parameter (its MIDI value), so the split point is **MIDI-mappable and automatable** (Ableton's
+  built-in key zones are not). Map several Zones' notes to one macro/CC and move a shared split across
+  instruments, live.
+- **Five notes, Min/Max per note.** Tick which note bounds the bottom (**Min**) and which bounds the top
+  (**Max**) — cross them for a **notch**. Type each bound by **note name or MIDI number** (both sync).
 
 Stack instances to build **splits and layers**.
 
@@ -30,7 +33,7 @@ convention — [see below](#light-your-zones-on-a-wled-strip-openlamp).
 ## Manual — every field and what it does
 
 The device is a few rows of controls (no on-screen keyboard). Every control is a Live
-parameter, so it's **automatable and MIDI-mappable** — including the `Low`/`High` split bounds,
+parameter, so it's **automatable and MIDI-mappable** — including the note bounds,
 which Ableton's native key zones don't let you map.
 
 ### Global
@@ -42,18 +45,31 @@ which Ableton's native key zones don't let you map.
 
 ### Limits — the zone
 
-A note plays only if it falls **inside** the zone. Each side has an on/off toggle, a value,
-and a Learn button.
+Five **named notes** define the zone. Each row is one note with an editable **name** *and* MIDI
+**number** (type either — `A0`, `C4`, `F#3`… or `60` — they sync), a **Learn** button, and two
+checkboxes: **Min** and **Max**.
 
 | Field | Default | Impact |
 |---|---|---|
-| **Low** | 0 | The low bound. With `Lo on`, only notes **≥ Low** pass. Its note name is shown beside it (C-2 at 0). |
-| **High** | 127 | The high bound. With `Hi on`, only notes **< High** pass — the High note itself belongs to the *upper* zone, so adjacent split zones meet with **no overlap**. Note name shown (G8 at 127). |
-| **Lo on / Hi on** | off | Enable each bound. A side that's off is **open** (no limit). Both off = full range, everything passes. |
-| **Learn Lo / Learn Hi** | — | Click to arm, then **play a note**: that note becomes the bound. Editing *is* the learn. |
+| **note 1–5** | A0 / C3 / C4 / C6 / C#8 | Five candidate boundary notes. Set each by typing its name or MIDI number, or by **Learn** (arm, then play the note). |
+| **Min** | on note1 (A0) | Tick = this note is the **low bound** — only notes **≥ it** pass (inclusive). **Radio**: at most one Min across the five; ticking one clears the others. |
+| **Max** | on note5 (C#8) | Tick = this note is the **high bound** — only notes **< it** pass (**exclusive**). **Radio**: at most one Max. |
+| **in** | — | Read-only dot per row: **green** = that note currently sounds (inside the zone), **grey** = muted. Updates live. |
+| **Learn** | — | Click to arm, then **play a note**: it becomes that row's note. Editing *is* the learn. |
 
-Defaults **0 / 127 with limits off** = a fully-open zone (everything through); the 0/127
-values are just neutral starting points for when you switch a limit on.
+| Config | Result |
+|---|---|
+| one Min + one Max, Min note **<** Max note | **band** — play the middle `[Min, Max)` |
+| one Min + one Max, **crossed** (Min note > Max note) | **notch** — play the two ends, mute the middle |
+| only a Min, or only a Max | single-sided cut |
+| neither ticked | fully open — everything plays |
+
+**Why Max is exclusive.** The Max note itself doesn't sound (`note < Max`), so two adjacent zones that
+share a boundary note meet with **no overlap** and never double it — set Zone A's Max and Zone B's Min to
+the same note and they tile cleanly.
+
+Default **Min A0 / Max C#8** = the whole 88-key piano plays (A0…C8; C#8 is the exclusive top, so C8 still
+sounds). Names use **scientific pitch** (C4 = middle C = 60).
 
 ### Post transpose — applied *after* the filter
 
@@ -106,15 +122,15 @@ or bypass while they ring: **no stuck notes**.
 
 ## Splits & layers
 
-Put one Zone at the head of each instrument and **MIDI-map the bounds directly** (Ableton's MIDI
-map, Cmd-M) — no rack, no internal linking. Map several Zones' `Low`/`High` to the **same CC** and
+Put one Zone at the head of each instrument and **MIDI-map the note bounds directly** (Ableton's MIDI
+map, Cmd-M) — no rack, no internal linking. Map several Zones' boundary notes to the **same CC** and
 one control moves the split across all of them at once:
 
 | Stage-keyboard mode | With Zones |
 |---|---|
-| **Solo** (one sound everywhere) | limits off |
-| **Split** (bass left / keys right) | Zone A `High` + Zone B `Low` on **one CC** = movable split point |
-| **Layer** (two sounds together) | both full range (or both bypassed) |
+| **Solo** (one sound everywhere) | no Min/Max ticked |
+| **Split** (bass left / keys right) | Zone A's **Max** note + Zone B's **Min** note on the **same note/CC** = one movable split point (Max exclusive → no doubled note) |
+| **Layer** (two sounds together) | both open (or both bypassed) |
 | **Split + layer** | any mix — stack as many Zones as you like |
 
 ## Light your zones on a WLED strip (OpenLamp)
