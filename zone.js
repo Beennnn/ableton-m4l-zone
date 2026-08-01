@@ -79,7 +79,9 @@ function names()     { try { for (var k = 0; k < 4; k++) outlet(10 + k, "set", n
 function nameToMidi(s) {
     s = ("" + s).trim();
     if (/^-?\d+$/.test(s)) return clamp(parseInt(s, 10), 0, 127);
-    var m = s.toLowerCase().match(/^([a-g])([#b]*)(-?\d+)$/);
+    // Tolerant: grab the note token at the END of the string, so typing over an existing name
+    // (e.g. field held "A0", you type "C2" -> "A0C2") still resolves to the last valid note.
+    var m = s.toLowerCase().match(/([a-g])([#b]*)(-?\d+)\s*$/);
     if (!m) return -1;
     var sharps = (m[2].match(/#/g) || []).length, flats = (m[2].match(/b/g) || []).length;
     return clamp((parseInt(m[3], 10) + 1) * 12 + PITCH[m[1]] + sharps - flats, 0, 127);
