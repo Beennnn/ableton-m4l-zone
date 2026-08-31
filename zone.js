@@ -205,13 +205,23 @@ function ccToShift(v, lo, hi) {
     else               i = v % N;
     return center64 ? (i + lo) : (((i - lo) % N) + lo);
 }
+// Tone/Octave pilotes par CC : on applique la valeur ICI, et on ne pousse dans le numbox qu'un
+// "set" (affichage seul, pas de re-sortie). Avant, on envoyait un int brut : le live.numbox le
+// re-emettait vers "prepend semin"/"prepend octaven", donc vers CE MEME objet js -> cycle ferme
+// (js -> live.numbox -> prepend -> js). Ecrire un parametre Live depuis le callback MIDI et le
+// laisser revenir sur son propre emetteur, c'est le mode de gel classique du M4L -- et il frappe
+// surtout sur le CC GLOBAL 102 (Tone), consomme par TOUTES les instances Zone du set d'un coup.
+// C'est exactement la parade deja utilisee pour les note-bornes (les "prepend set" du patch).
+// Le garde d'egalite evite en plus tout travail quand la valeur ne change pas (tr rejoue 2x).
 function ctl(controller, value) {
     if (ccOn && controller == ctlNum) {
-        try { outlet(7, ccToShift(value, -6, 5)); } catch (e) {}
+        var s = ccToShift(value, -6, 5);
+        if (s !== semi) { semi = s; try { outlet(7, "set", s); } catch (e) {} }
         return;
     }
     if (octCcOn && controller == octCtlNum) {
-        try { outlet(8, ccToShift(value, -4, 4)); } catch (e) {}
+        var o = ccToShift(value, -4, 4);
+        if (o !== oct) { oct = o; try { outlet(8, "set", o); } catch (e) {} }
         return;
     }
     outlet(0, [0xB0 + (curChan - 1), controller, value]);
