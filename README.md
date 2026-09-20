@@ -50,7 +50,7 @@ Point, Full Bass, Full Piano, Split — plus a demo Live set.
 
 Turn **Lights** on and each Zone paints its keyboard range as a coloured band on an LED
 strip, moving live as you move the split, via the open
-[wled-midi](https://github.com/openlamp/wled-midi) convention. Setup and colour
+[wled-midi](https://github.com/openlamp/openlamp-spec-midi) convention. Setup and colour
 assignment: **[docs/wled-lights.md](docs/wled-lights.md)**.
 
 ## Try it in the browser
@@ -75,7 +75,7 @@ MIT — see [LICENSE](LICENSE).
 
 **Splits for Live — and an optional bridge to light.** Zone is a standalone Max for Live
 device; its optional WLED output speaks the open
-[**wled-midi**](https://github.com/openlamp/wled-midi) convention — the agreed dictionary
+[**wled-midi**](https://github.com/openlamp/openlamp-spec-midi) convention — the agreed dictionary
 between [**MIDI**](https://midi.org) (the MIDI Association) and
 [**WLED**](https://kno.wled.ge). Part of the [OpenLamp](https://github.com/openlamp)
 ecosystem; free for anyone to build on.
