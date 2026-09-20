@@ -2,16 +2,16 @@
 
 Zone can **show each split on an LED strip** — every instrument's keyboard range lit as a
 coloured band, moving live as you move the split. It drives
-[**wled-midi**](https://github.com/openlamp/wled-midi), the open MIDI↔WLED convention, in
+[**wled-midi**](https://github.com/openlamp/openlamp-spec-midi), the open MIDI↔WLED convention, in
 its **`zone`** position mode.
 
 ## How it works
 
 Turn **Lights** on and Zone holds two notes — the zone's **low** and **high** boundary —
 on the **Lights Ch** channel, sent to a MIDI port named **`OpenLamp`**. A wled-midi
-implementation (the [engine](https://github.com/openlamp/engine), the
-[browser tool](https://github.com/openlamp/wled-midi-web), the
-[Bome pack](https://github.com/openlamp/bome)…) listening on that port lights the LED band
+implementation (the [engine](https://github.com/openlamp/openlamp-engine-python), the
+[browser tool](https://github.com/openlamp/openlamp-demo-web), the
+[Bome pack](https://github.com/openlamp/openlamp-pack-bome)…) listening on that port lights the LED band
 between the lowest and highest held note, in the channel's colour. Move a bound → the band
 moves. Stack Zones on different channels → each instrument's range shows in its own
 colour, a live map of your split.
