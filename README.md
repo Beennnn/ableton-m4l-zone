@@ -5,7 +5,7 @@ result — with split points that are real, MIDI-mappable Live parameters.**
 
 ![Zone — the Max for Live device: five note rows with Min/Max, octave and tone transpose, CC control and Lights](zone-device.png)
 
-1. Download **[`zone.amxd`](https://github.com/Beennnn/zone-m4l/raw/main/zone.amxd)**
+1. Download **[`zone.amxd`](https://github.com/Beennnn/ableton-m4l-zone/raw/main/zone.amxd)**
    (also listed on [maxforlive.com](https://www.maxforlive.com/library/device.php?id=15717)).
 2. Drop it on a **MIDI track, before the instrument**, or into a rack chain.
 3. Tick **Min** on the note that bounds the bottom and **Max** on the one that bounds the
